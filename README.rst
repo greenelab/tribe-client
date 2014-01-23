@@ -12,7 +12,7 @@ Quick start
 
 1. Add "tribe-client" to your INSTALLED_APPS setting like this::
 
-   INSTALLED_APPS = (
+    INSTALLED_APPS = (
         ...
         'tribe-client',
     )
