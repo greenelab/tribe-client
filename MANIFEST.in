@@ -1,5 +1,3 @@
 include LICENSE.txt
 include README.rst
-recursive-include tribe-client/static *
 recursive-include tribe-client/templates *
-recursive-include docs *
