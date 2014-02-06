@@ -1,6 +1,6 @@
 import requests
 from app_settings import *
-from genes.models import Gene
+# from genes.models import Gene
 
 
 def get_access_token(authorization_code):
@@ -120,8 +120,8 @@ def retrieve_all_user_versions(access_token):
         return []
 
 
-def return_gene_objects(gene_id_list):
-    gene_queryset = Gene.objects.filter(entrez__in=gene_id_list)
-    return gene_queryset
+#def return_gene_objects(gene_id_list):
+#    gene_queryset = Gene.objects.filter(entrez__in=gene_id_list)
+#    return gene_queryset
 
 
