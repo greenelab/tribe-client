@@ -1,5 +1,5 @@
 =====
-Django Tribe client
+Django Tribe Client
 =====
 
 Tribe client is a simple Django app to connect your server to the 'Tribe' web service
@@ -14,7 +14,7 @@ Quick start
 
     INSTALLED_APPS = (
         ...
-        'tribe-client',
+        'tribe_client',
     )
 
  
