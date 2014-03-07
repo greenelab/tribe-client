@@ -17,20 +17,14 @@ Quick start
         'tribe_client',
     )
 
-
-
-
- 
 2. Include the tribe-client URLconf in your project urls.py like this::
 
      url(r'^tribe_client/', include('tribe_client.urls')),
 
-
-
 3. Include desired tribe settings in settings.py file::
 
-   TRIBE_CROSSREF_DB = 'Ensembl'
-   TRIBE_ID = ''
-   TRIBE_SECRET = '' 
+|   TRIBE_CROSSREF_DB = 'Ensembl'
+|   TRIBE_ID = ''
+|   TRIBE_SECRET = '' 
 
 
