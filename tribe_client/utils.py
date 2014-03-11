@@ -8,12 +8,12 @@ def get_access_token(authorization_code):
     parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET,  "grant_type": "authorization_code",  "code": authorization_code,  "scope": "read"}
     tribe_connection = requests.post("http://" +  TRIBE_URL +  "/oauth2/access_token", data=parameters)
     result = tribe_connection.json()
-    print(result)
     access_token = result['access_token']
     return access_token
 
 def retrieve_public_genesets(options={}):
-    genesets_url = 'http://'+ TRIBE_URL + '/api/v1/geneset/?format=json&organism__slug=homo-sapiens'
+    # Returns only public genesets
+    genesets_url = 'http://'+ TRIBE_URL + '/api/v1/geneset/?format=json'
 
     for opt_key,opt in options.iteritems():
         genesets_url += '&'+opt_key+'='+opt
@@ -30,7 +30,8 @@ def retrieve_public_genesets(options={}):
 
 
 def retrieve_public_versions(options={}):
-    versions_url = 'http://' + TRIBE_URL + '/api/v1/version/?format=json&organism__slug=homo-sapiens'
+    # Returns only public genesets
+    versions_url = 'http://' + TRIBE_URL + '/api/v1/version/?format=json'
 
     for opt_key,opt in options.iteritems():
         versions_url += '&'+opt_key+'='+opt
@@ -65,7 +66,7 @@ def retrieve_user_object(access_token):
 
 
 def retrieve_user_genesets(access_token):
-
+    # Returns ALL genesets a user has access to
     try:
         parameters = {'oauth_consumer_key': access_token}
 
@@ -88,7 +89,7 @@ def retrieve_user_genesets(access_token):
 
 
 def retrieve_user_versions(access_token, geneset):
-
+    # Returns ALL versions a user has access to that belong to a specific geneset
     try:
         parameters = {'oauth_consumer_key': access_token}
 
