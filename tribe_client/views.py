@@ -45,9 +45,10 @@ def display_versions(request, access_token, geneset):
         return render(request, 'display_versions.html', {'versions': versions})
 
 def return_access_token(request):
-    data = {
-        'access_token': request.session['tribe_token']
-    }
+    if 'tribe_token' in request.session:
+        data = { 'access_token': request.session['tribe_token'] }
+    else:
+        data = { 'access_token': 'No access token' }
     data = json.dumps(data)
     return HttpResponse(data, mimetype='application/json')
 
