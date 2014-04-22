@@ -50,6 +50,6 @@ def return_access_token(request):
     else:
         data = { 'access_token': 'No access token' }
     data = json.dumps(data)
-    return HttpResponse(data, mimetype='application/json')
+    return HttpResponse(data, content_type='application/json')
 
 
