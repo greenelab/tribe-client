@@ -1,6 +1,6 @@
 from django.conf import settings
 
-TRIBE_URL = "tribe.dartmouth.edu"
+TRIBE_URL = "http://tribe.dartmouth.edu"
 
 ENTREZ = 'Entrez'
 
