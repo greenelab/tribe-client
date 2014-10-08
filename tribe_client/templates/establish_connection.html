@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="hero-unit" >
+
+    <h3> Login with Tribe: </h3>
+    <a href="http://{{ tribe_url }}/oauth2/authorize/?response_type=code&client_id={{client_id}}&scope=read">Tribe Login Page</a>
+
+
+</div>
+
+{% endblock %}
+
