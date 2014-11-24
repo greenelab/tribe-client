@@ -7,6 +7,7 @@ urlpatterns = patterns('',
     url(r'^access_genesets$', views.access_genesets, name='access_genesets'),
     url(r'^display_genesets/(?P<access_token>[-_\w]+)/$', views.display_genesets, name='display_genesets'),
     url(r'^display_geneset_versions/(?P<access_token>[-_\w]+)/(?P<geneset>[-_\w]+)/$', views.display_versions, name='display_versions'),
+    url(r'^token$', views.return_access_token, name='return_access_token'),
 
 )
 

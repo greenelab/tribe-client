@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404, render, render_to_response
+from django.http import HttpResponse
 from django.template import Context, loader, RequestContext
 from tribe_client import utils
 from .app_settings import TRIBE_ID, TRIBE_URL
+import json
 
 
 def connect_to_tribe(request):
@@ -41,4 +43,13 @@ def display_versions(request, access_token, geneset):
         for version in versions:
             version['gene_list'] = utils.return_gene_objects(version['genes'])
         return render(request, 'display_versions.html', {'versions': versions})
+
+def return_access_token(request):
+    if 'tribe_token' in request.session:
+        data = { 'access_token': request.session['tribe_token'] }
+    else:
+        data = { 'access_token': 'No access token' }
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
+
 

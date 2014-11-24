@@ -15,7 +15,7 @@ setup(
     version = '0.0.1',
     author = 'Rene A. Zelaya',
     author_email = 'Rene.Armando.Zelaya.Favila@dartmouth.edu',
-    packages = ['tribe-client'],
+    packages = ['tribe_client'],
     include_package_data = True,
     url = 'https://bitbucket.org/greenelab/tribe-client',
     license = 'LICENSE.txt',

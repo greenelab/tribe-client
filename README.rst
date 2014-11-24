@@ -1,5 +1,5 @@
 =====
-Django Tribe client
+Django Tribe Client
 =====
 
 Tribe client is a simple Django app to connect your server to the 'Tribe' web service
@@ -14,13 +14,19 @@ Quick start
 
     INSTALLED_APPS = (
         ...
-        'tribe-client',
+        'tribe_client',
     )
+|
 
- 
 2. Include the tribe-client URLconf in your project urls.py like this::
 
-     url(r'^tribe_client/', include('tribe_client.urls')),
+    url(r'^tribe_client/', include('tribe_client.urls')),
+|
 
+3. Include desired tribe settings in settings.py file::
+
+    TRIBE_CROSSREF_DB = 'Ensembl'
+    TRIBE_ID = ''
+    TRIBE_SECRET = '' 
 
 
