@@ -1,19 +1,11 @@
-TRIBE_URL = "tribe.dartmouth.edu"
+from django.conf import settings
 
-CROSSREF_DB = (
-    # Uncomment the line for the gene database used by your server:
+TRIBE_URL = "http://tribe.dartmouth.edu"
 
-    # Ensembl:
-    #'&xrdb=Ensembl'
+ENTREZ = 'Entrez'
 
-    # Entrez:   
-    '&xrdb=Entrez'
+CROSSREF_DB = '&xrdb=' + getattr(settings, 'TRIBE_CROSSREF_DB', ENTREZ)
 
-    # Symbol:
-    #'&xrdb=Symbol'
-)
-
-
-TRIBE_ID = ''
-TRIBE_SECRET= ''
+TRIBE_ID = getattr(settings, 'TRIBE_ID', '')
+TRIBE_SECRET= getattr(settings, 'TRIBE_SECRET', '')
 
