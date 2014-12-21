@@ -1,10 +1,11 @@
 import requests
+import json
 from app_settings import *
 
 
 def get_access_token(authorization_code):
 
-    parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET,  "grant_type": "authorization_code",  "code": authorization_code,  "scope": "read"}
+    parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET,  "grant_type": "authorization_code",  "code": authorization_code,  "scope": "write"}
     tribe_connection = requests.post(TRIBE_URL +  "/oauth2/access_token", data=parameters)
     result = tribe_connection.json()
     access_token = result['access_token']
@@ -119,9 +120,50 @@ def retrieve_all_user_versions(access_token):
         #return ('We were not able to access Tribe at this moment')
         return []
 
+def create_remote_geneset(access_token, geneset_info):
 
-#def return_gene_objects(gene_id_list):
-#    gene_queryset = Gene.objects.filter(entrez__in=gene_id_list)
-#    return gene_queryset
+    if 'organism' in geneset_info:
+        scientific_name = geneset_info['organism']
+        organism_request = requests.get(TRIBE_URL + '/api/v1/organism?scientific_name=' + str(scientific_name))
+        response = organism_request.json()
+        organism = response['objects'][0]
+        geneset_info['organism'] = organism['resource_uri']
+
+    try:
+        headers = {'HTTP_AUTHORIZATION': 'OAuth ' + str(access_token)}
+        payload = json.dumps(geneset_info)
+        genesets_url = TRIBE_URL + '/api/v1/geneset'
+        r = requests.post(genesets_url, data=payload, headers=headers)
+        response = r.json()
+        return response
+
+    except:
+        return []
+
+def create_remote_version(access_token, version_info):
+
+    try:
+        headers = {'HTTP_AUTHORIZATION': 'OAuth' + str(access_token)}
+        payload = json.dumps(version_info)
+        versions_url = TRIBE_URL + '/api/v1/version'
+        r = requests.post(versions_url, data=payload, headers=headers)
+        response = r.json()
+        return response
+    except:
+        return []
+
+def return_user_object(access_token):
+    parameters = {'oauth_consumer_key': access_token}
+    tribe_connection = requests.get(TRIBE_URL + '/api/v1/user', params = parameters)
+
+    try:
+        result = tribe_connection.json()
+        return result
+    except:
+        result = '{"meta": {"previous": null, "total_count": 0, "offset": 0, "limit": 20, "next": null}, "objects": []}'
+        result = json.loads(result)
+        return result
+
+
 
 
