@@ -8,6 +8,8 @@ urlpatterns = patterns('',
     url(r'^display_genesets/(?P<access_token>[-_\w]+)/$', views.display_genesets, name='display_genesets'),
     url(r'^display_geneset_versions/(?P<access_token>[-_\w]+)/(?P<geneset>[-_\w]+)/$', views.display_versions, name='display_versions'),
     url(r'^token$', views.return_access_token, name='return_access_token'),
+    url(r'^return_user$', views.return_user_obj, name='return_user'),
+    url(r'^create_geneset$', views.create_geneset, name='create_geneset'),
 
 )
 
