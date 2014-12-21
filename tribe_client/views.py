@@ -8,7 +8,7 @@ import json
 
 def connect_to_tribe(request):
     if 'tribe_token' not in request.session:
-        return render(request, 'establish_connection.html', {'client_id': TRIBE_ID, 'tribe_url': TRIBE_URL})
+        return render(request, 'establish_connection.html', {'client_id': TRIBE_ID, 'tribe_url': TRIBE_URL, 'scope': 'write'})
     else:
         access_token = request.session['tribe_token']
         return display_genesets(request, access_token)
@@ -52,4 +52,51 @@ def return_access_token(request):
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
+def create_geneset(request):
+
+    geneset_info = request.POST.get('geneset')
+    geneset_info = json.loads(geneset_info)
+    genes = request.POST.get('genes')
+    genes = genes.split(",")
+    num_genes = len(genes)
+    geneset_info['selectedGenes'] = genes
+    geneset_info['xrdb'] = 'Entrez'
+    geneset_info['description'] = 'Initial version containing the first ' + str(num_genes) + ' genes from Pilgrm analysis results.'
+
+    if 'tribe_token' in request.session:
+        tribe_token = request.session['tribe_token']
+        is_token_valid = utils.retrieve_user_object(tribe_token)
+        if (is_token_valid =='OAuth Token expired'):
+            tribe_token = None
+            tribe_response = {'response': 'Not Authorized'}
+        else:
+            tribe_response = utils.create_remote_geneset(tribe_token, geneset_info)
+            print(tribe_response)
+            slug = tribe_response['slug']
+            creator = tribe_response['creator']['username']
+
+            geneset_url = "http://tribe.dartmouth.edu/#/use/detail/" + creator + "/" + slug
+            tribe_response = {'geneset_url': geneset_url}
+
+
+    else:
+        tribe_token = None
+        tribe_response = {'response': 'Not Authorized'}
+
+    json_response = json.dumps(tribe_response)
+
+    return HttpResponse(json_response, content_type='application/json')
+
+def return_user_obj(request):
+
+    if 'tribe_token' in request.session:
+        tribe_token = request.session['tribe_token']
+
+    else:
+        tribe_token = None
+
+    tribe_response = utils.return_user_object(tribe_token)
+
+    json_response = json.dumps(tribe_response)
+    return HttpResponse(json_response, content_type='application/json')
 
