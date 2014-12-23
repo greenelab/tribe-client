@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render, render_to_response
 from django.http import HttpResponse
 from django.template import Context, loader, RequestContext
 from tribe_client import utils
-from .app_settings import TRIBE_ID, TRIBE_URL
+from .app_settings import TRIBE_ID, TRIBE_URL, CROSSREF, CROSSREF_DB
 import json
 
 
@@ -60,7 +60,7 @@ def create_geneset(request):
     genes = genes.split(",")
     num_genes = len(genes)
     geneset_info['selectedGenes'] = genes
-    geneset_info['xrdb'] = 'Entrez'
+    geneset_info['xrdb'] = CROSSREF
     geneset_info['description'] = 'Initial version containing the first ' + str(num_genes) + ' genes from Pilgrm analysis results.'
 
     if 'tribe_token' in request.session:
@@ -75,7 +75,7 @@ def create_geneset(request):
             slug = tribe_response['slug']
             creator = tribe_response['creator']['username']
 
-            geneset_url = "http://tribe.dartmouth.edu/#/use/detail/" + creator + "/" + slug
+            geneset_url = TRIBE_URL + "/#/use/detail/" + creator + "/" + slug
             tribe_response = {'geneset_url': geneset_url}
 
 
