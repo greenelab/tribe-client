@@ -71,7 +71,6 @@ def create_geneset(request):
             tribe_response = {'response': 'Not Authorized'}
         else:
             tribe_response = utils.create_remote_geneset(tribe_token, geneset_info)
-            print(tribe_response)
             slug = tribe_response['slug']
             creator = tribe_response['creator']['username']
 

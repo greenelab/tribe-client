@@ -130,7 +130,7 @@ def create_remote_geneset(access_token, geneset_info):
         geneset_info['organism'] = organism['resource_uri']
 
     try:
-        headers = {'HTTP_AUTHORIZATION': 'OAuth ' + str(access_token)}
+        headers = {'AUTH': 'OAuth ' + access_token, 'Content-Type': 'application/json'}
         payload = json.dumps(geneset_info)
         genesets_url = TRIBE_URL + '/api/v1/geneset'
         r = requests.post(genesets_url, data=payload, headers=headers)
@@ -143,7 +143,7 @@ def create_remote_geneset(access_token, geneset_info):
 def create_remote_version(access_token, version_info):
 
     try:
-        headers = {'HTTP_AUTHORIZATION': 'OAuth' + str(access_token)}
+        headers = {'AUTH': 'OAuth' + access_token, 'Content-Type': 'application/json'}
         payload = json.dumps(version_info)
         versions_url = TRIBE_URL + '/api/v1/version'
         r = requests.post(versions_url, data=payload, headers=headers)
