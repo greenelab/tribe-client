@@ -2,13 +2,13 @@ from django.shortcuts import get_object_or_404, render, render_to_response
 from django.http import HttpResponse
 from django.template import Context, loader, RequestContext
 from tribe_client import utils
-from .app_settings import TRIBE_ID, TRIBE_URL, CROSSREF, CROSSREF_DB
+from .app_settings import *
 import json
 
 
 def connect_to_tribe(request):
     if 'tribe_token' not in request.session:
-        return render(request, 'establish_connection.html', {'client_id': TRIBE_ID, 'tribe_url': TRIBE_URL, 'scope': 'write'})
+        return render(request, 'establish_connection.html', {'access_code_url': ACCESS_CODE_URL, 'client_id': TRIBE_ID, 'scope': 'write'})
     else:
         access_token = request.session['tribe_token']
         return display_genesets(request, access_token)
