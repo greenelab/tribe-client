@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, render_to_response
+from django.shortcuts import get_object_or_404, render, render_to_response, redirect
 from django.http import HttpResponse
 from django.template import Context, loader, RequestContext
 from tribe_client import utils
@@ -17,22 +17,24 @@ def logout_from_tribe(request):
     request.session.clear()
     return connect_to_tribe(request)
 
-def access_genesets(request):
+def get_token(request):
     access_code = request.GET.__getitem__('code')
     access_token = utils.get_access_token(access_code)
     request.session['tribe_token'] = access_token
-    return display_genesets(request, access_token)
+    return redirect('display_genesets')
 
-def display_genesets(request, access_token):
+def display_genesets(request):
+    access_token = request.session['tribe_token']
     is_token_valid = utils.retrieve_user_object(access_token)
     if (is_token_valid == 'OAuth Token expired'):
         request.session.clear()
         return connect_to_tribe(request)
     else:
         genesets = utils.retrieve_user_genesets(access_token)
-        return render(request, 'display_genesets.html', {'genesets': genesets, 'access_token': access_token})
+        return render(request, 'display_genesets.html', {'genesets': genesets})
 
-def display_versions(request, access_token, geneset):
+def display_versions(request, geneset):
+    access_token = request.session['tribe_token']
     is_token_valid = utils.retrieve_user_object(access_token)
 
     if (is_token_valid == 'OAuth Token expired'):
@@ -41,7 +43,9 @@ def display_versions(request, access_token, geneset):
     else:
         versions = utils.retrieve_user_versions(access_token, geneset)
         for version in versions:
-            version['gene_list'] = utils.return_gene_objects(version['genes'])
+            version['gene_list'] = []
+            for annotation in version['annotations']:
+                version['gene_list'].append(annotation['gene']['standard_name'])
         return render(request, 'display_versions.html', {'versions': versions})
 
 def return_access_token(request):
