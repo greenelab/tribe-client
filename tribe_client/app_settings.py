@@ -13,3 +13,4 @@ CROSSREF = getattr(settings, 'TRIBE_CROSSREF_DB', ENTREZ)
 TRIBE_ID = getattr(settings, 'TRIBE_ID', '')
 TRIBE_SECRET= getattr(settings, 'TRIBE_SECRET', '')
 
+TRIBE_REDIRECT_URI = getattr(settings, 'TRIBE_REDIRECT_URI', '')

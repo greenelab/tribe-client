@@ -5,7 +5,7 @@ from app_settings import *
 
 def get_access_token(authorization_code):
 
-    parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET,  "grant_type": "authorization_code",  "code": authorization_code,  "scope": "write"}
+    parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET, "grant_type": "authorization_code",  "code": authorization_code, "redirect_uri": TRIBE_REDIRECT_URI}
     tribe_connection = requests.post(ACCESS_TOKEN_URL, data=parameters)
     result = tribe_connection.json()
     access_token = result['access_token']
