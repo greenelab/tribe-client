@@ -22,11 +22,11 @@ Quick start
 
     url(r'^tribe_client/', include('tribe_client.urls')),
 |
+3. Register your client server at http://tribe-new.greenelab.com/oauth2/applications/. Make sure to:
 
-3. Include desired tribe settings in settings.py file::
+   a. Select "Confidential" under "Client type" and
+   b. Select "Authorization Code" under "Authorization grant type"
 
-    TRIBE_CROSSREF_DB = 'Ensembl'
-    TRIBE_ID = ''
-    TRIBE_SECRET = '' 
-
+4. Write down the Client id in the "TRIBE_ID" setting and the Client secret in the TRIBE_SECRET setting
+   in the settings.py file
 

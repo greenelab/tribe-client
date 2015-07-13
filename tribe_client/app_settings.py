@@ -1,6 +1,6 @@
 from django.conf import settings
 
-TRIBE_URL = "http://tribe.greenelab.com"
+TRIBE_URL = getattr(settings, 'http://tribe.greenelab.com', '')
 
 ACCESS_CODE_URL = TRIBE_URL + "/oauth2/authorize/"
 ACCESS_TOKEN_URL = TRIBE_URL + "/oauth2/token/"
