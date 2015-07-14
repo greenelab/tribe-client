@@ -2,19 +2,25 @@
 
 {% block content %}
 
-<div class="hero-unit" >
-    <br>
-    <h2>Manage gene sets</h2>
-    <table class = "table table-bordered" border="2">
-        <tr><th>Gene set title</th></tr>
+<div class="">
+    <h2>{{request.session.tribe_user.username|capfirst}}'s Gene Sets</h2>
+    <br/>
+    <table class = "table table-striped">
+        <colgroup>
+            <col class="span3" />
+            <col class="span3" />
+            <col class="span5" />
+            <col class="span5" />
+        </colgroup>
+        <tr><th><a class="btn" href="http://tribe.greenelab.com/#/build">Create on Tribe</a></th><th>Name</th><th>Genes</th><th>Description</th></tr>
         {% for geneset in genesets %}
         <tr>
-            <td><a href="{% url "display_versions" geneset.id %}">{{ geneset.title }}</a></td>
+            <td><a href="http://tribe.greenelab.com/#/use/detail/{{geneset.creator.username}}/{{geneset.slug}}">Edit on Tribe</a></td><td>{{ geneset.title }}</td>
+            <td>{% for gene in geneset.tip.gene_objs %}{{gene.standard_name}} {% endfor %}</td>
+            <td>{{ geneset.abstract }}</td>
         </tr>
         {% endfor %}
     </table>
-
 </div>
 
 {% endblock %}
-

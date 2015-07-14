@@ -8,7 +8,7 @@ import json
 
 def connect_to_tribe(request):
     if 'tribe_token' not in request.session:
-        return render(request, 'establish_connection.html', {'access_code_url': ACCESS_CODE_URL, 'client_id': TRIBE_ID, 'scope': 'write'})
+        return render(request, 'establish_connection.html', {'tribe_url': TRIBE_URL, 'access_code_url': ACCESS_CODE_URL, 'client_id': TRIBE_ID, 'scope': 'write'})
     else:
         access_token = request.session['tribe_token']
         return display_genesets(request, access_token)
@@ -65,7 +65,7 @@ def create_geneset(request):
     num_genes = len(genes)
     geneset_info['selectedGenes'] = genes
     geneset_info['xrdb'] = CROSSREF
-    geneset_info['description'] = 'Initial version containing the first ' + str(num_genes) + ' genes from Pilgrm analysis results.'
+    geneset_info['description'] = 'Initial version containing the first ' + str(num_genes) + ' genes.'
 
     if 'tribe_token' in request.session:
         tribe_token = request.session['tribe_token']
