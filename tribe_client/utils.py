@@ -8,8 +8,11 @@ def get_access_token(authorization_code):
     parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET, "grant_type": "authorization_code",  "code": authorization_code, "redirect_uri": TRIBE_REDIRECT_URI}
     tribe_connection = requests.post(ACCESS_TOKEN_URL, data=parameters)
     result = tribe_connection.json()
-    access_token = result['access_token']
-    return access_token
+    if 'access_token' in result:
+        access_token = result['access_token']
+        return access_token
+    else:
+        return None
 
 def retrieve_public_genesets(options={}):
     # Returns only public genesets
@@ -76,7 +79,7 @@ def retrieve_user_genesets(access_token):
             return ('OAuth Token expired')
 
         else:
-            genesets_url = TRIBE_URL + '/api/v1/geneset/' + '?creator=' + str(user[0]['id'])
+            genesets_url = TRIBE_URL + '/api/v1/geneset/' + '?creator=' + str(user[0]['id']) + '&show_tip=true&full_annotations=true'
             tribe_connection = requests.get(genesets_url, params=parameters)
             result = tribe_connection.json()
             meta = result['meta']

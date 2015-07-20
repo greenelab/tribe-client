@@ -21,17 +21,26 @@ def get_token(request):
     access_code = request.GET.__getitem__('code')
     access_token = utils.get_access_token(access_code)
     request.session['tribe_token'] = access_token
+    request.session['tribe_user'] = utils.retrieve_user_object(access_token)[0]
     return redirect('display_genesets')
 
 def display_genesets(request):
-    access_token = request.session['tribe_token']
-    is_token_valid = utils.retrieve_user_object(access_token)
-    if (is_token_valid == 'OAuth Token expired'):
-        request.session.clear()
-        return connect_to_tribe(request)
+    if 'tribe_token' in request.session:
+        access_token = request.session['tribe_token']
+        is_token_valid = utils.retrieve_user_object(access_token)
+        if (is_token_valid == 'OAuth Token expired'):
+            request.session.clear()
+            return connect_to_tribe(request)
+        else:
+            genesets = utils.retrieve_user_genesets(access_token)
+            if 'tribe_user' in request.session:
+                tribe_user = request.session['tribe_user']
+            else:
+                tribe_user = None
+            return render(request, 'display_genesets.html', {'tribe_url': TRIBE_URL, 'genesets': genesets, 'tribe_user': tribe_user})
+
     else:
-        genesets = utils.retrieve_user_genesets(access_token)
-        return render(request, 'display_genesets.html', {'genesets': genesets})
+        return connect_to_tribe(request)
 
 def display_versions(request, geneset):
     access_token = request.session['tribe_token']

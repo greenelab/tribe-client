@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="">
-    <h2>{{request.session.tribe_user.username|capfirst}}'s Gene Sets</h2>
+    <h2>{{tribe_user.username|capfirst}}'s Gene Sets</h2>
     <br/>
     <table class = "table table-striped">
         <colgroup>
@@ -12,11 +12,11 @@
             <col class="span5" />
             <col class="span5" />
         </colgroup>
-        <tr><th><a class="btn" href="http://tribe.greenelab.com/#/build">Create on Tribe</a></th><th>Name</th><th>Genes</th><th>Description</th></tr>
+        <tr><th><a class="btn btn-primary" href="{{tribe_url}}/#/build">Create new on Tribe</a></th><th>Name</th><th>Genes</th><th>Description</th></tr>
         {% for geneset in genesets %}
         <tr>
-            <td><a href="http://tribe.greenelab.com/#/use/detail/{{geneset.creator.username}}/{{geneset.slug}}">Edit on Tribe</a></td><td>{{ geneset.title }}</td>
-            <td>{% for gene in geneset.tip.gene_objs %}{{gene.standard_name}} {% endfor %}</td>
+            <td><a href="{{tribe_url}}/#/use/detail/{{geneset.creator.username}}/{{geneset.slug}}">Edit on Tribe</a></td><td>{{ geneset.title }}</td>
+            <td>{% for annotation in geneset.tip.annotations %}{{annotation.gene.standard_name}} {% endfor %}</td>
             <td>{{ geneset.abstract }}</td>
         </tr>
         {% endfor %}
