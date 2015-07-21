@@ -27,19 +27,19 @@ Quick start
 
    a. Select "Confidential" under "Client type" and
    b. Select "Authorization Code" under "Authorization grant type"
-   c. Enter the client server address plus "tribe_client/get_token" in the "Redirect uris" box
+   c. Enter the client server address plus "/tribe_client/get_token" in the "Redirect uris" box
 
 
 4. Write down the Client id in the "TRIBE_ID" setting and the Client secret in the TRIBE_SECRET setting
    in the settings.py file
 
 
-5. TRIBE_REDIRECT_URI setting should be the address of the client server plus "tribe_client/get_token"
+5. TRIBE_REDIRECT_URI setting should be the address of the client server plus "/tribe_client/get_token"
 
 
 6. Make sure that you have a base.html template that the tribe_client templates can extend
 
 
-7. Make a link that takes the user to the '/tribe_client/' url of your website for them to log in using Tribe
+7. Make a link that takes the user to the '/tribe_client' url of your website for them to log in using Tribe
 
 
