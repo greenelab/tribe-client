@@ -10,7 +10,6 @@ def connect_to_tribe(request):
     if 'tribe_token' not in request.session:
         return render(request, 'establish_connection.html', {'tribe_url': TRIBE_URL, 'access_code_url': ACCESS_CODE_URL, 'client_id': TRIBE_ID, 'scope': 'write'})
     else:
-        access_token = request.session['tribe_token']
         return display_genesets(request)
 
 def logout_from_tribe(request):
