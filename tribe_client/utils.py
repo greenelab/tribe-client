@@ -168,5 +168,9 @@ def return_user_object(access_token):
         return result
 
 
-
-
+def obtain_token_using_credentials(username, password, client_id, client_secret):
+    oauth_url = TRIBE_URL + '/oauth2/token/'
+    payload = {'grant_type': 'password', 'username': username, 'password': password, 'client_id': client_id, 'client_secret': client_secret}
+    r = requests.post(oauth_url, data=payload)
+    tribe_response = r.json()
+    return tribe_response['access_token']

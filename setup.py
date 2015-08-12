@@ -12,9 +12,9 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'django-tribe-client',
-    version = '1.0.4',
+    version = '1.0.5',
     author = 'Rene A. Zelaya',
-    author_email = 'Rene.Armando.Zelaya.Favila@dartmouth.edu',
+    author_email = 'Rene.A.Zelaya.Favila@dartmouth.edu',
     packages = ['tribe_client'],
     include_package_data = True,
     url = 'https://bitbucket.org/greenelab/tribe-client',
