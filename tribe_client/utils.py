@@ -5,7 +5,19 @@ from app_settings import *
 
 def get_access_token(authorization_code):
     """
-    Docstring
+    Takes the temporary, short-lived authorization_code returned by tribe and
+    sends it back (with some other ids and secrets) in exchange for an
+    access_token.
+
+    Arguments:
+    authorization_code -- a string of characters returned by Tribe when it
+    redirects the user from the page where they authorize the client to access
+    their resources
+
+    Returns:
+    access_token -- another string of characters, with which users can remotely
+    access their resources.
+
     """
     parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET, "grant_type": "authorization_code",  "code": authorization_code, "redirect_uri": TRIBE_REDIRECT_URI}
     tribe_connection = requests.post(ACCESS_TOKEN_URL, data=parameters)
