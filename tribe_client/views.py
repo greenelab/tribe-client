@@ -20,41 +20,42 @@ def get_token(request):
     access_code = request.GET.__getitem__('code')
     access_token = utils.get_access_token(access_code)
     request.session['tribe_token'] = access_token
-    request.session['tribe_user'] = utils.retrieve_user_object(access_token)[0]
+    request.session['tribe_user'] = utils.retrieve_user_object(access_token)
     return redirect('display_genesets')
 
 def display_genesets(request):
     if 'tribe_token' in request.session:
         access_token = request.session['tribe_token']
-        is_token_valid = utils.retrieve_user_object(access_token)
-        if (is_token_valid == 'OAuth Token expired'):
+        get_user = utils.retrieve_user_object(access_token)
+
+        if (get_user == 'OAuth Token expired' or get_user == []):
             request.session.clear()
             return connect_to_tribe(request)
-        else:
-            genesets = utils.retrieve_user_genesets(access_token)
-            if 'tribe_user' in request.session:
-                tribe_user = request.session['tribe_user']
-            else:
-                tribe_user = None
+
+        else:  # The user must be logged in and has access to her/himself
+            genesets = utils.retrieve_user_genesets(access_token, {'full_genes': 'true', 'limit': 100})
+            tribe_user = get_user
             return render(request, 'display_genesets.html', {'tribe_url': TRIBE_URL, 'genesets': genesets, 'tribe_user': tribe_user})
 
     else:
         return connect_to_tribe(request)
 
 def display_versions(request, geneset):
-    access_token = request.session['tribe_token']
-    is_token_valid = utils.retrieve_user_object(access_token)
+    if 'tribe_token' in request.session:
+        access_token = request.session['tribe_token']
+        get_user = utils.retrieve_user_object(access_token)
 
-    if (is_token_valid == 'OAuth Token expired'):
-        request.session.clear()
-        return connect_to_tribe(request)
-    else:
-        versions = utils.retrieve_user_versions(access_token, geneset)
-        for version in versions:
-            version['gene_list'] = []
-            for annotation in version['annotations']:
-                version['gene_list'].append(annotation['gene']['standard_name'])
-        return render(request, 'display_versions.html', {'versions': versions})
+        if (get_user == 'OAuth Token expired' or get_user == []):
+            request.session.clear()
+            return connect_to_tribe(request)
+
+        else:
+            versions = utils.retrieve_user_versions(access_token, geneset)
+            for version in versions:
+                version['gene_list'] = []
+                for annotation in version['annotations']:
+                    version['gene_list'].append(annotation['gene']['standard_name'])
+            return render(request, 'display_versions.html', {'versions': versions})
 
 def return_access_token(request):
     if 'tribe_token' in request.session:

@@ -12,7 +12,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'django-tribe-client',
-    version = '1.0.5',
+    version = '1.1.0',
     author = 'Rene A. Zelaya',
     author_email = 'Rene.A.Zelaya.Favila@dartmouth.edu',
     packages = ['tribe_client'],
