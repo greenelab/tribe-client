@@ -111,4 +111,3 @@ def return_user_obj(request):
 
     json_response = json.dumps(tribe_response)
     return HttpResponse(json_response, content_type='application/json')
-

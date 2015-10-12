@@ -189,7 +189,7 @@ def create_remote_geneset(access_token, geneset_info):
 def create_remote_version(access_token, version_info):
 
     try:
-        headers = {'AUTH': 'OAuth' + access_token, 'Content-Type': 'application/json'}
+        headers = {'AUTH': 'OAuth ' + access_token, 'Content-Type': 'application/json'}
         payload = json.dumps(version_info)
         versions_url = TRIBE_URL + '/api/v1/version'
         r = requests.post(versions_url, data=payload, headers=headers)
