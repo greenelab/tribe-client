@@ -23,7 +23,7 @@ Quick start
     url(r'^tribe_client/', include('tribe_client.urls')),
 
 
-3. Register your client server at http://tribe-new.greenelab.com/oauth2/applications/. Make sure to:
+3. Register your client server at http://tribe.greenelab.com/oauth2/applications/. Make sure to:
 
    a. Select "Confidential" under "Client type" and
    b. Select "Authorization Code" under "Authorization grant type"
