@@ -1,48 +1,61 @@
-from django.shortcuts import get_object_or_404, render, render_to_response
+from django.shortcuts import get_object_or_404, render, render_to_response, redirect
 from django.http import HttpResponse
 from django.template import Context, loader, RequestContext
 from tribe_client import utils
-from .app_settings import TRIBE_ID, TRIBE_URL, CROSSREF, CROSSREF_DB
+from .app_settings import *
 import json
 
 
 def connect_to_tribe(request):
     if 'tribe_token' not in request.session:
-        return render(request, 'establish_connection.html', {'client_id': TRIBE_ID, 'tribe_url': TRIBE_URL, 'scope': 'write'})
+        return render(request, 'establish_connection.html', {'tribe_url': TRIBE_URL, 'access_code_url': ACCESS_CODE_URL, 'client_id': TRIBE_ID, 'scope': 'write'})
     else:
-        access_token = request.session['tribe_token']
-        return display_genesets(request, access_token)
+        return display_genesets(request)
 
 def logout_from_tribe(request):
     request.session.clear()
     return connect_to_tribe(request)
 
-def access_genesets(request):
+def get_token(request):
     access_code = request.GET.__getitem__('code')
     access_token = utils.get_access_token(access_code)
     request.session['tribe_token'] = access_token
-    return display_genesets(request, access_token)
+    request.session['tribe_user'] = utils.retrieve_user_object(access_token)
+    return redirect('display_genesets')
 
-def display_genesets(request, access_token):
-    is_token_valid = utils.retrieve_user_object(access_token)
-    if (is_token_valid == 'OAuth Token expired'):
-        request.session.clear()
-        return connect_to_tribe(request)
+def display_genesets(request):
+    if 'tribe_token' in request.session:
+        access_token = request.session['tribe_token']
+        get_user = utils.retrieve_user_object(access_token)
+
+        if (get_user == 'OAuth Token expired' or get_user == []):
+            request.session.clear()
+            return connect_to_tribe(request)
+
+        else:  # The user must be logged in and has access to her/himself
+            genesets = utils.retrieve_user_genesets(access_token, {'full_genes': 'true', 'limit': 100})
+            tribe_user = get_user
+            return render(request, 'display_genesets.html', {'tribe_url': TRIBE_URL, 'genesets': genesets, 'tribe_user': tribe_user})
+
     else:
-        genesets = utils.retrieve_user_genesets(access_token)
-        return render(request, 'display_genesets.html', {'genesets': genesets, 'access_token': access_token})
-
-def display_versions(request, access_token, geneset):
-    is_token_valid = utils.retrieve_user_object(access_token)
-
-    if (is_token_valid == 'OAuth Token expired'):
-        request.session.clear()
         return connect_to_tribe(request)
-    else:
-        versions = utils.retrieve_user_versions(access_token, geneset)
-        for version in versions:
-            version['gene_list'] = utils.return_gene_objects(version['genes'])
-        return render(request, 'display_versions.html', {'versions': versions})
+
+def display_versions(request, geneset):
+    if 'tribe_token' in request.session:
+        access_token = request.session['tribe_token']
+        get_user = utils.retrieve_user_object(access_token)
+
+        if (get_user == 'OAuth Token expired' or get_user == []):
+            request.session.clear()
+            return connect_to_tribe(request)
+
+        else:
+            versions = utils.retrieve_user_versions(access_token, geneset)
+            for version in versions:
+                version['gene_list'] = []
+                for annotation in version['annotations']:
+                    version['gene_list'].append(annotation['gene']['standard_name'])
+            return render(request, 'display_versions.html', {'versions': versions})
 
 def return_access_token(request):
     if 'tribe_token' in request.session:
@@ -61,7 +74,7 @@ def create_geneset(request):
     num_genes = len(genes)
     geneset_info['selectedGenes'] = genes
     geneset_info['xrdb'] = CROSSREF
-    geneset_info['description'] = 'Initial version containing the first ' + str(num_genes) + ' genes from Pilgrm analysis results.'
+    geneset_info['description'] = 'Initial version containing the first ' + str(num_genes) + ' genes.'
 
     if 'tribe_token' in request.session:
         tribe_token = request.session['tribe_token']
@@ -98,4 +111,3 @@ def return_user_obj(request):
 
     json_response = json.dumps(tribe_response)
     return HttpResponse(json_response, content_type='application/json')
-

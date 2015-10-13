@@ -2,12 +2,18 @@
 
 {% block content %}
 
-<div class="hero-unit" >
+<div class="well">
+    <h2>My Gene Sets</h2>
+    <br/>
+    <p>Manage your gene sets using <a href="{{ tribe_url }}">Tribe</a>:</p>
 
-    <h3> Login with Tribe: </h3>
-    <a href="{{ tribe_url }}/oauth2/authorize/?response_type=code&client_id={{client_id}}&scope={{scope}}">Tribe Login Page</a>
+    <div style="padding: 10px">
+        <a class="btn btn-primary" href="{{ tribe_url }}/accounts/create_temporary/">Create a temporary account (no email or password required)</a>
+        </br>
+        </br>
+        <a class="btn btn-primary" href="{{ access_code_url }}?response_type=code&client_id={{client_id}}&scope={{scope}}">Create / Sign in with a Tribe account</a>
+    </div>
 
 </div>
 
 {% endblock %}
-

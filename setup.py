@@ -12,17 +12,17 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name = 'django-tribe-client',
-    version = '0.0.1',
+    version = '1.1.1',
     author = 'Rene A. Zelaya',
-    author_email = 'Rene.Armando.Zelaya.Favila@dartmouth.edu',
+    author_email = 'tribe.greenelab@gmail.com',
     packages = ['tribe_client'],
     include_package_data = True,
     url = 'https://bitbucket.org/greenelab/tribe-client',
     license = 'LICENSE.txt',
-    description = 'Reusable Django app to connect servers with the Tribe web service at Dartmouth College',
+    description = 'Reusable Django app to connect servers with the Tribe web service at the University of Pennsylvania',
     long_description = open('README.rst').read(),
     install_requires = [
-        'requests == 2.1.0',
+        'requests == 2.5.0',
     ],
     classifiers=[
         'Environment :: Web Environment',
