@@ -79,7 +79,7 @@ def retrieve_user_object(access_token):
     resources. This is a string of characters.
 
     Returns:
-    Either - 
+    Either -
 
     a) 'OAuth Token expired' if the access_token has expired,
     b) An empty list [] if the access_token is completely invalid, or

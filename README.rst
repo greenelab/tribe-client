@@ -3,7 +3,7 @@ Django Tribe Client
 =====
 
 Tribe client is a simple Django app to connect your server to the 'Tribe' web service
-(located at http://tribe.greenelab.com).
+(located at https://tribe.greenelab.com).
 
 This python package allows web servers created using django to connect directly to Tribe and make use of its resources. Users of the client web server can login to access their Tribe resources via Tribe OAuth 2.0 authentication.
 
@@ -49,7 +49,7 @@ Quick Start
     )
 
 
-3. Register your client server at http://tribe.greenelab.com/oauth2/applications/. Make sure to:
+3. Register your client server at https://tribe.greenelab.com/oauth2/applications/. Make sure to:
 
   a. Be logged-in using your Tribe account
   b. Select "Confidential" under ``Client type`` and
