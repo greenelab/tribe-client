@@ -1,2 +1,4 @@
 ~$
 .pyc$
+^django_tribe_client.egg-info/
+^dist/
