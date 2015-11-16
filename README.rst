@@ -17,11 +17,6 @@ Tribe-client is registered as "django-tribe-client" in PyPI and is pip installab
 	pip install django-tribe-client
 
 
-Source
----------------------
-
-The source for tribe-client can be found here: https://bitbucket.org/greenelab/tribe-client
-
 
 Quick Start
 ---------------------
