@@ -2,15 +2,20 @@
 Django Tribe Client
 =====
 
-Tribe client is a simple Django app to connect your server to the 'Tribe' web service
-(located at https://tribe.greenelab.com).
+Tribe client is a simple `Django <https://docs.djangoproject.com/en/dev/>`_ app
+to connect your server to the 'Tribe' web service (located at
+https://tribe.greenelab.com).
 
-This python package allows web servers created using django to connect directly to Tribe and make use of its resources. Users of the client web server can login to access their Tribe resources via Tribe OAuth 2.0 authentication.
+This python package allows web servers created using django to connect directly
+to Tribe and make use of its resources. Users of the client web server can
+login to access their Tribe resources via Tribe `OAuth2 <http://oauth.net/2/>`_
+authentication.
 
 
 Download and Install
 ---------------------
-Tribe-client is registered as "django-tribe-client" in PyPI and is pip installable:
+Tribe-client is registered as "django-tribe-client" in PyPI and is pip
+installable:
 
 .. code-block:: shell
 
@@ -32,7 +37,8 @@ Quick Start
     )
 
 
-2. Include the tribe-client URLconf in your project's URLconf (usually ``urls.py``):
+2. Include the tribe-client URLconf in your project's URLconf (usually
+``urls.py``):
 
 .. code-block:: python
 
@@ -44,7 +50,8 @@ Quick Start
     )
 
 
-3. Register your client server at https://tribe.greenelab.com/oauth2/applications/. Make sure to:
+3. Register your client server at
+https://tribe.greenelab.com/oauth2/applications/. Make sure to:
 
   a. Be logged-in using your Tribe account
   b. Select "Confidential" under ``Client type`` and
@@ -62,7 +69,8 @@ Quick Start
       * Client credentials
 
 
-4. Write down the Client ID in the ``TRIBE_ID`` setting and the Client secret in the ``TRIBE_SECRET`` setting in your ``settings.py`` file like so:
+4. Write down the Client ID in the ``TRIBE_ID`` setting and the Client secret
+in the ``TRIBE_SECRET`` setting in your ``settings.py`` file like so:
 
 .. code-block:: python
 
@@ -70,17 +78,20 @@ Quick Start
     TRIBE_SECRET = '*****Tribe Client Secret*****'
 
 
-5. The ``TRIBE_REDIRECT_URI`` setting should be the address of the client server plus "/tribe_client/get_token".
+5. The ``TRIBE_REDIRECT_URI`` setting should be the address of the client
+server plus "/tribe_client/get_token".
 
 .. code-block:: python
 
     TRIBE_REDIRECT_URI = 'http://example.com/tribe_client/get_token'
 
 
-6. Make sure that you have a ``base.html`` template that the tribe_client templates can extend
+6. Make sure that you have a ``base.html`` template that the tribe_client
+templates can extend
 
 
-7. Make a link that takes the user to the ``/tribe_client`` url of your website for them to log in using Tribe
+7. Make a link that takes the user to the ``/tribe_client`` url of your website
+for them to log in using Tribe
 
 
 A Closer Look
@@ -88,8 +99,11 @@ A Closer Look
 
 Under the hood, tribe-client has functions that:
 
-1) Get an access token (via the OAuth 2.0 protocol) that allows users to access and create resources in Tribe.
+1) Get an access token (via the `OAuth2 <http://oauth.net/2/>`_ protocol) that
+allows users to access and create resources in Tribe.
 
-2) Retrieves public and private collections (and their versions) and displays them on the client server using views and templates included in the package.
+2) Retrieves public and private collections (and their versions) and displays
+them on the client server using views and templates included in the package.
 
-3) Allows users to create new collections and versions remotely, from the client server
+3) Allows users to create new collections and versions remotely, from the
+client server

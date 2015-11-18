@@ -1,7 +1,7 @@
 .. Django Tribe Client documentation master file
 
-Welcome to Django Tribe Client's documentation!
-================================================
+Welcome to the Django Tribe Client documentation!
+====================================================
 
 This python package allows web servers created using the
 `Django <https://docs.djangoproject.com/en/dev/>`_ web framework to connect
