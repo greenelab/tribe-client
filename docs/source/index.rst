@@ -59,12 +59,11 @@ Quick Start
 3. Register your client server at
 https://tribe.greenelab.com/oauth2/applications/. Make sure to:
 
-  a. Be logged-in using your Tribe account
-  b. Select "Confidential" under ``Client type`` and
-  c. Select "Authorization Code" under ``Authorization grant type``
-  d. Enter your client server's address plus "/tribe_client/get_token" in the
-  ``Redirect uris`` box. If your client server's current address is
-  http://example.com, enter **http://example.com/tribe_client/get_token**
+    a. Be logged-in using your Tribe account
+    b. Select "Confidential" under ``Client type`` and
+    c. Select "Authorization Code" under ``Authorization grant type``
+    d. Enter your client server's address plus "/tribe_client/get_token" in the``Redirect uris`` box. If your client server's current address is http://example.com, enter **http://example.com/tribe_client/get_token**
+
 
   .. note:: 
 
@@ -117,3 +116,9 @@ them on the client server using views and templates included in the package.
 
 3) Allows users to create new collections and versions remotely, from the
 client server
+
+
+.. toctree::
+   :maxdepth: 2
+
+   style_guide
