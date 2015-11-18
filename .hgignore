@@ -3,3 +3,4 @@
 ^django_tribe_client.egg-info/
 ^dist/
 ^tribeclientenv/
+^docs/build/
