@@ -45,7 +45,7 @@ Quick Start
     from django.conf.urls import url, patterns, include
 
     urlpatterns = patterns('',
-      # Other URLs in your project,
+      ...
       (r'^tribe_client/', include('tribe_client.urls')),
     )
 
@@ -106,4 +106,4 @@ allows users to access and create resources in Tribe.
 them on the client server using views and templates included in the package.
 
 3) Allows users to create new collections and versions remotely, from the
-client server
+client server.
