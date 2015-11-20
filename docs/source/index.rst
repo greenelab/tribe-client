@@ -78,7 +78,7 @@ https://tribe.greenelab.com/oauth2/applications/. Make sure to:
       * Client credentials
 
 
-4. Write down the Client ID in the ``TRIBE_ID`` setting and the Client secret
+4. Record the Client ID in the ``TRIBE_ID`` setting and the Client secret
 in the ``TRIBE_SECRET`` setting in your ``settings.py`` file like so:
 
 .. code-block:: python
@@ -99,8 +99,8 @@ server plus "/tribe_client/get_token".
 templates can extend
 
 
-7. Make a link that takes the user to the ``/tribe_client`` url of your website
-for them to log in using Tribe
+7. Make a link that takes the user to the ``/tribe_client`` url (the name of
+this url is 'connect_to_tribe') in your website for them to log in using Tribe.
 
 
 A Closer Look
