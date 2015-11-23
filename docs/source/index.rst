@@ -62,7 +62,9 @@ https://tribe.greenelab.com/oauth2/applications/. Make sure to:
     a. Be logged-in using your Tribe account
     b. Select "Confidential" under ``Client type`` and
     c. Select "Authorization Code" under ``Authorization grant type``
-    d. Enter your client server's address plus "/tribe_client/get_token" in the``Redirect uris`` box. If your client server's current address is http://example.com, enter **http://example.com/tribe_client/get_token**
+    d. Enter your client server's address plus "/tribe_client/get_token" in the
+       ``Redirect uris`` box. If your client server's current address is 
+       http://example.com, enter **http://example.com/tribe_client/get_token**.
 
 
   .. note:: 
