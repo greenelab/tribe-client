@@ -19,7 +19,11 @@ def get_access_token(authorization_code):
     access their resources.
 
     """
-    parameters = {"client_id": TRIBE_ID, "client_secret": TRIBE_SECRET, "grant_type": "authorization_code",  "code": authorization_code, "redirect_uri": TRIBE_REDIRECT_URI}
+    parameters = {
+        "client_id": TRIBE_ID, "client_secret": TRIBE_SECRET,
+        "grant_type": "authorization_code",  "code": authorization_code,
+        "redirect_uri": TRIBE_REDIRECT_URI
+    }
     tribe_connection = requests.post(ACCESS_TOKEN_URL, data=parameters)
     result = tribe_connection.json()
     if 'access_token' in result:
@@ -28,18 +32,16 @@ def get_access_token(authorization_code):
     else:
         return None
 
+
 def retrieve_public_genesets(options={}):
     """
     Returns only public genesets
     """
 
-    genesets_url = TRIBE_URL + '/api/v1/geneset/?format=json'
-
-    for opt_key,opt in options.iteritems():
-        genesets_url += '&'+opt_key+'='+opt
+    genesets_url = TRIBE_URL + '/api/v1/geneset/'
 
     try:
-        tribe_connection = requests.get(genesets_url)
+        tribe_connection = requests.get(genesets_url, params=options)
         result = tribe_connection.json()
         genesets = result['objects']
         return genesets
@@ -53,13 +55,10 @@ def retrieve_public_versions(options={}):
     Returns only public versions
     """
 
-    versions_url = TRIBE_URL + '/api/v1/version/?format=json'
-
-    for opt_key,opt in options.iteritems():
-        versions_url += '&'+opt_key+'='+opt
+    versions_url = TRIBE_URL + '/api/v1/version/'
 
     try:
-        tribe_connection = requests.get(versions_url)
+        tribe_connection = requests.get(versions_url, params=options)
         result = tribe_connection.json()
         versions = result['objects']
         return versions
@@ -90,12 +89,13 @@ def retrieve_user_object(access_token):
     parameters = {'oauth_consumer_key': access_token}
 
     try:
-        tribe_connection = requests.get(TRIBE_URL + '/api/v1/user', params = parameters)
+        tribe_connection = requests.get(TRIBE_URL + '/api/v1/user',
+                                        params=parameters)
         result = tribe_connection.json()
         user = result['objects']  # This is in the form of a list
         meta = result['meta']
 
-        if (meta.has_key('oauth_token_expired')):
+        if 'oauth_token_expired' in meta:
             return ('OAuth Token expired')
         else:
             return user[0]  # Grab the first (and only) element in the list
