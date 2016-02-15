@@ -85,16 +85,7 @@ def create_geneset(request):
 
     geneset_info = request.POST.get('geneset')
     geneset_info = json.loads(geneset_info)
-    try:
-        genes = geneset_info['genes']
-        genes = genes.split(",")
-    except KeyError:
-        genes = []
-    num_genes = len(genes)
-    geneset_info['selectedGenes'] = genes
     geneset_info['xrdb'] = CROSSREF
-    geneset_info['description'] = 'Initial version containing the first ' + \
-                                  str(num_genes) + ' genes.'
 
     if 'tribe_token' in request.session:
         tribe_token = request.session['tribe_token']

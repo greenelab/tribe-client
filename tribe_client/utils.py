@@ -35,7 +35,18 @@ def get_access_token(authorization_code):
 
 def retrieve_public_genesets(options={}):
     """
-    Returns only public genesets
+    Returns only public genesets. This will not return any of the
+    private ones since no oauth token is sent with this request.
+
+    Arguments:
+    options -- An optional dictionary to be sent as request parameters
+    (to filter the types of genesets requested, etc.)
+
+    Returns:
+    Either -
+
+    a) A list of genesets (as dictionaries), or
+    b) An empty list, if the request failed.
     """
 
     genesets_url = TRIBE_URL + '/api/v1/geneset/'
@@ -50,12 +61,26 @@ def retrieve_public_genesets(options={}):
         return []
 
 
-def retrieve_public_versions(options={}):
+def retrieve_public_versions(geneset, options={}):
     """
-    Returns only public versions
+    Returns only public versions. As with retrieve_public_genesets() above,
+    this will not return any private versions since no oauth token is
+    sent with this request.
+
+    Arguments:
+    options -- An optional dictionary to be sent as request parameters
+    geneset -- The resource URI for the desired geneset
+
+    Returns:
+    Either -
+
+    a) A list of versions (as dictionaries), or
+    b) An empty list, if the request failed.
     """
 
     versions_url = TRIBE_URL + '/api/v1/version/'
+    options['geneset__id'] = geneset
+    options['xrdb'] = CROSSREF
 
     try:
         tribe_connection = requests.get(versions_url, params=options)
@@ -105,14 +130,26 @@ def retrieve_user_object(access_token):
 
 def retrieve_user_genesets(access_token, options={}):
     """
-    Returns genesets created by the user
+    Returns any genesets created by the user.
+
+    Arguments:
+    access_token -- The OAuth token with which the user has access to
+    their resources. This is a string of characters.
+
+    options -- An optional dictionary to be sent as request parameters
+
+    Returns:
+    Either -
+
+    a) A list of genesets (as dictionaries), or
+    b) An empty list, if the request failed.
     """
 
     try:
         get_user = retrieve_user_object(access_token)
 
         if (get_user == 'OAuth Token expired' or get_user == []):
-            return ([])
+            return []
 
         else:
             options['oauth_consumer_key'] = access_token
@@ -132,10 +169,22 @@ def retrieve_user_genesets(access_token, options={}):
         return []
 
 
-def retrieve_user_versions(access_token, geneset):
+def retrieve_user_geneset_versions(access_token, geneset):
     """
     Returns all versions that belong to a specific geneset
     (if user has access to that geneset)
+
+    Arguments:
+    access_token -- The OAuth token with which the user has access to
+    their resources. This is a string of characters.
+
+    geneset -- The resource URI for the desired geneset
+
+    Returns:
+    Either -
+
+    a) A list of versions (as dictionaries), or
+    b) An empty list, if the request failed.
     """
 
     try:
@@ -154,25 +203,23 @@ def retrieve_user_versions(access_token, geneset):
         return []
 
 
-def retrieve_all_user_versions(access_token):
-
-    try:
-        parameters = {'oauth_consumer_key': access_token,
-                      'xrdb': CROSSREF,
-                      'show_tip': 'true'}
-
-        versions_url = TRIBE_URL + '/api/v1/version/'
-        tribe_connection = requests.get(versions_url, params=parameters)
-        result = tribe_connection.json()
-        meta = result['meta']
-        versions = result['objects']
-        return versions
-
-    except:
-        return []
-
-
 def create_remote_geneset(access_token, geneset_info):
+    """
+    Creates a geneset in Tribe given a 'geneset_info' dictionary.
+
+    Arguments:
+    access_token -- The OAuth token with which the user has access to
+    their resources. This is a string of characters.
+
+    geneset_info -- The dictionary containing the values for the fields
+    in the geneset that is going to be created in Tribe.
+
+    Returns:
+    Either -
+
+    a) The newly created geneset (as a dictionary), or
+    b) An empty list, if the request failed.
+    """
 
     scientific_name = geneset_info['organism']
     parameters = {'scientific_name': scientific_name}
@@ -183,7 +230,7 @@ def create_remote_geneset(access_token, geneset_info):
     geneset_info['organism'] = organism['resource_uri']
 
     try:
-        headers = {'AUTH': 'OAuth ' + access_token,
+        headers = {'Authorization': 'OAuth ' + access_token,
                    'Content-Type': 'application/json'}
 
         payload = json.dumps(geneset_info)
@@ -197,9 +244,26 @@ def create_remote_geneset(access_token, geneset_info):
 
 
 def create_remote_version(access_token, version_info):
+    """
+    Creates a new version for an already existing geneset in Tribe.
+
+    Arguments:
+    access_token -- The OAuth token with which the user has access to
+    their resources. This is a string of characters.
+
+    version_info -- The dictionary containing the values for the fields
+    in the version that is going to be created in Tribe. One of these
+    is the resource_uri of the geneset this version will belong to.
+
+    Returns:
+    Either -
+
+    a) The newly created version (as a dictionary), or
+    b) An empty list, if the request failed.
+    """
 
     try:
-        headers = {'AUTH': 'OAuth ' + access_token,
+        headers = {'Authorization': 'OAuth ' + access_token,
                    'Content-Type': 'application/json'}
         payload = json.dumps(version_info)
         versions_url = TRIBE_URL + '/api/v1/version'
