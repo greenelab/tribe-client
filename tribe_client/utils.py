@@ -221,11 +221,15 @@ def create_remote_geneset(access_token, geneset_info):
     b) An empty list, if the request failed.
     """
 
-    scientific_name = geneset_info['organism']
-    parameters = {'scientific_name': scientific_name}
+    # This filters organisms by scientific name in the 'organisms' endpoint
+    # of Tribe's API. This returns a dictionary with 'meta' and 'objects' keys.
+    parameters = {'scientific_name': geneset_info['organism']}
     organism_request = requests.get(TRIBE_URL + '/api/v1/organism',
                                     params=parameters)
     response = organism_request.json()
+
+    # The 'objects' key always contains a list (even when there is just one
+    # element). Put this organism object's resource_uri in geneset_info.
     organism = response['objects'][0]
     geneset_info['organism'] = organism['resource_uri']
 
