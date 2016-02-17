@@ -1,6 +1,6 @@
 from django.shortcuts import \
         get_object_or_404, render, render_to_response, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Context, loader, RequestContext
 from tribe_client import utils
 from tribe_client.app_settings import *
@@ -121,30 +121,41 @@ def create_geneset(request):
     a) The Tribe URL of the geneset that has just been created, or
     b) A 401 Unauthorized response if the user is not signed in
 
+    N.B. To gracefully save to Tribe, your interface should handle the
+    case when a 400 and 401 responses are returned. One way to do this
+    for the 401 Unauthorized response, for example, is to catch the error
+    and send the user to the Tribe-login page ('/tribe_client' url, which
+    is named 'connect_to_tribe' in urls.py). Another way to handle this
+    response is to only allow the users to make a request
+    to this view (via a button, etc.) when they are already signed in.
+
     """
-    if 'tribe_token' in request.session:
-        tribe_token = request.session['tribe_token']
-        is_token_valid = utils.retrieve_user_object(tribe_token)
-
-        if (is_token_valid == 'OAuth Token expired'):
-            request.session.clear()
-            return connect_to_tribe(request)
-        else:
-            geneset_info = request.POST.get('geneset')
-            geneset_info = json.loads(geneset_info)
-            geneset_info['xrdb'] = CROSSREF
-            tribe_response = utils.create_remote_geneset(tribe_token,
-                                                         geneset_info)
-            slug = tribe_response['slug']
-            creator = tribe_response['creator']['username']
-
-            geneset_url = TRIBE_URL + "/#/use/detail/" + creator + "/" + slug
-            tribe_response = {'geneset_url': geneset_url}
-            json_response = json.dumps(tribe_response)
-            return HttpResponse(json_response, content_type='application/json')
-
-    else:
+    if not ('tribe_token' in request.session):
         return HttpResponse('Unauthorized', status=401)
+
+    tribe_token = request.session['tribe_token']
+    is_token_valid = utils.retrieve_user_object(tribe_token)
+
+    if (is_token_valid == 'OAuth Token expired'):
+        request.session.clear()
+        return HttpResponse('Unauthorized', status=401)
+
+    geneset_info = request.POST.get('geneset')
+    geneset_info = json.loads(geneset_info)
+    geneset_info['xrdb'] = CROSSREF
+
+    tribe_response = utils.create_remote_geneset(tribe_token,
+                                                 geneset_info)
+    try:
+        slug = tribe_response['slug']
+        creator = tribe_response['creator']['username']
+        geneset_url = TRIBE_URL + "/#/use/detail/" + creator + "/" + slug
+        response = {'geneset_url': geneset_url}
+    except KeyError:
+        return HttpResponseBadRequest(tribe_response)
+
+    json_response = json.dumps(response)
+    return HttpResponse(json_response, content_type='application/json')
 
 
 def return_user_obj(request):
