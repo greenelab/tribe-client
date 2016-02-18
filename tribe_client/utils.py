@@ -226,25 +226,33 @@ def create_remote_geneset(access_token, geneset_info):
     parameters = {'scientific_name': geneset_info['organism']}
     organism_request = requests.get(TRIBE_URL + '/api/v1/organism',
                                     params=parameters)
-    response = organism_request.json()
+    org_response = organism_request.json()
 
     # The 'objects' key always contains a list (even when there is just one
     # element). Put this organism object's resource_uri in geneset_info.
-    organism = response['objects'][0]
-    geneset_info['organism'] = organism['resource_uri']
+    organism_obj = org_response['objects'][0]
+    geneset_info['organism'] = organism_obj['resource_uri']
+
+    headers = {'Authorization': 'OAuth ' + access_token,
+               'Content-Type': 'application/json'}
+
+    payload = json.dumps(geneset_info)
+    genesets_url = TRIBE_URL + '/api/v1/geneset'
+    geneset_response = requests.post(genesets_url, data=payload,
+                                     headers=headers)
+
+    # If something went wrong and the geneset was not created
+    # (making the response status something other than 201),
+    # return the response as is given by Tribe
+    if (geneset_response.status_code != 201):
+        return geneset_response
 
     try:
-        headers = {'Authorization': 'OAuth ' + access_token,
-                   'Content-Type': 'application/json'}
+        geneset_response = geneset_response.json()
+        return geneset_response
 
-        payload = json.dumps(geneset_info)
-        genesets_url = TRIBE_URL + '/api/v1/geneset'
-        r = requests.post(genesets_url, data=payload, headers=headers)
-        response = r.json()
-        return response
-
-    except:
-        return []
+    except ValueError:
+        return geneset_response
 
 
 def create_remote_version(access_token, version_info):
@@ -266,16 +274,26 @@ def create_remote_version(access_token, version_info):
     b) An empty list, if the request failed.
     """
 
+    headers = {'Authorization': 'OAuth ' + access_token,
+               'Content-Type': 'application/json'}
+
+    payload = json.dumps(version_info)
+    versions_url = TRIBE_URL + '/api/v1/version'
+    version_response = requests.post(versions_url, data=payload,
+                                     headers=headers)
+
+    # If something went wrong and the version was not created
+    # (making the response status something other than 201),
+    # return the response as is given by Tribe
+    if (version_response.status_code != 201):
+        return version_response
+
     try:
-        headers = {'Authorization': 'OAuth ' + access_token,
-                   'Content-Type': 'application/json'}
-        payload = json.dumps(version_info)
-        versions_url = TRIBE_URL + '/api/v1/version'
-        r = requests.post(versions_url, data=payload, headers=headers)
-        response = r.json()
-        return response
-    except:
-        return []
+        version_response = version_response.json()
+        return version_response
+
+    except ValueError:
+        return version_response
 
 
 def return_user_object(access_token):
