@@ -2,6 +2,7 @@ from django.shortcuts import \
         get_object_or_404, render, render_to_response, redirect
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Context, loader, RequestContext
+from django.utils import html
 from tribe_client import utils
 from tribe_client.app_settings import *
 import json
@@ -150,9 +151,19 @@ def create_geneset(request):
         slug = tribe_response['slug']
         creator = tribe_response['creator']['username']
         geneset_url = TRIBE_URL + "/#/use/detail/" + creator + "/" + slug
-        response = {'geneset_url': geneset_url}
-    except KeyError:
-        return HttpResponseBadRequest(tribe_response)
+        html_safe_content = html.escape(geneset_url)
+        response = {'geneset_url': html_safe_content}
+
+    # If there is an error and a json object could not be loaded from the
+    # response, the create_remote_geneset() util function will return a
+    # raw response from Tribe, which will trigger a TypeError when trying
+    # to access a key from it like a dictionary.
+    except TypeError:
+        html_safe_content = html.escape(tribe_response.content)
+        return HttpResponseBadRequest('The following error has been returned'
+                                      ' by Tribe while attempting to create '
+                                      'a geneset: "' + html_safe_content +
+                                      '"')
 
     json_response = json.dumps(response)
     return HttpResponse(json_response, content_type='application/json')
