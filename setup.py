@@ -10,7 +10,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name='django-tribe-client',
+    name='tribe-client',
     version='1.1.3',
     author='Rene A. Zelaya',
     author_email='tribe.greenelab@gmail.com',
@@ -18,7 +18,7 @@ setup(
     include_package_data=True,
     url='https://bitbucket.org/greenelab/tribe-client',
     license='LICENSE.txt',
-    description='Reusable Django app to connect servers with the Tribe web' +
+    description='Portable Python package to connect with the Tribe web' +
         ' service at the University of Pennsylvania',
     long_description=open('README.rst').read(),
     install_requires=[
