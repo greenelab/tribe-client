@@ -203,7 +203,7 @@ def retrieve_user_geneset_versions(access_token, geneset):
         return []
 
 
-def create_remote_geneset(access_token, geneset_info):
+def create_remote_geneset(access_token, geneset_info, tribe_url):
     """
     Creates a geneset in Tribe given a 'geneset_info' dictionary.
 
@@ -213,6 +213,9 @@ def create_remote_geneset(access_token, geneset_info):
 
     geneset_info -- The dictionary containing the values for the fields
     in the geneset that is going to be created in Tribe.
+
+    tribe_url -- A string. URL of the Tribe instance where this geneset
+    will be saved to.
 
     Returns:
     Either -
@@ -224,7 +227,7 @@ def create_remote_geneset(access_token, geneset_info):
     # This filters organisms by scientific name in the 'organisms' endpoint
     # of Tribe's API. This returns a dictionary with 'meta' and 'objects' keys.
     parameters = {'scientific_name': geneset_info['organism']}
-    organism_request = requests.get(TRIBE_URL + '/api/v1/organism',
+    organism_request = requests.get(tribe_url + '/api/v1/organism',
                                     params=parameters)
     org_response = organism_request.json()
 
@@ -237,7 +240,7 @@ def create_remote_geneset(access_token, geneset_info):
                'Content-Type': 'application/json'}
 
     payload = json.dumps(geneset_info)
-    genesets_url = TRIBE_URL + '/api/v1/geneset'
+    genesets_url = tribe_url + '/api/v1/geneset'
     geneset_response = requests.post(genesets_url, data=payload,
                                      headers=headers)
 
@@ -255,7 +258,7 @@ def create_remote_geneset(access_token, geneset_info):
         return geneset_response
 
 
-def create_remote_version(access_token, version_info):
+def create_remote_version(access_token, version_info, tribe_url):
     """
     Creates a new version for an already existing geneset in Tribe.
 
@@ -278,7 +281,7 @@ def create_remote_version(access_token, version_info):
                'Content-Type': 'application/json'}
 
     payload = json.dumps(version_info)
-    versions_url = TRIBE_URL + '/api/v1/version'
+    versions_url = tribe_url + '/api/v1/version'
     version_response = requests.post(versions_url, data=payload,
                                      headers=headers)
 
@@ -311,7 +314,8 @@ def return_user_object(access_token):
         return result
 
 
-def obtain_token_using_credentials(username, password, client_id, client_secret):
+def obtain_token_using_credentials(username, password, client_id,
+                                   client_secret, access_token_url):
 
     payload = {'grant_type': 'password',
                'username': username,
@@ -319,6 +323,6 @@ def obtain_token_using_credentials(username, password, client_id, client_secret)
                'client_id': client_id,
                'client_secret': client_secret}
 
-    r = requests.post(ACCESS_TOKEN_URL, data=payload)
+    r = requests.post(access_token_url, data=payload)
     tribe_response = r.json()
     return tribe_response['access_token']

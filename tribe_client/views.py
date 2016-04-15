@@ -145,8 +145,8 @@ def create_geneset(request):
     geneset_info = json.loads(geneset_info)
     geneset_info['xrdb'] = CROSSREF
 
-    tribe_response = utils.create_remote_geneset(tribe_token,
-                                                 geneset_info)
+    tribe_response = utils.create_remote_geneset(tribe_token, geneset_info,
+                                                 TRIBE_URL)
     try:
         slug = tribe_response['slug']
         creator = tribe_response['creator']['username']
