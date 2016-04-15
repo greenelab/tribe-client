@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-#from distutils.core import setup
 from setuptools import setup
 
 README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
@@ -11,18 +10,19 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
-    name = 'django-tribe-client',
-    version = '1.1.1',
-    author = 'Rene A. Zelaya',
-    author_email = 'tribe.greenelab@gmail.com',
-    packages = ['tribe_client'],
-    include_package_data = True,
-    url = 'https://bitbucket.org/greenelab/tribe-client',
-    license = 'LICENSE.txt',
-    description = 'Reusable Django app to connect servers with the Tribe web service at the University of Pennsylvania',
-    long_description = open('README.rst').read(),
-    install_requires = [
-        'requests == 2.5.0',
+    name='django-tribe-client',
+    version='1.1.3',
+    author='Rene A. Zelaya',
+    author_email='tribe.greenelab@gmail.com',
+    packages=['tribe_client'],
+    include_package_data=True,
+    url='https://bitbucket.org/greenelab/tribe-client',
+    license='LICENSE.txt',
+    description='Reusable Django app to connect servers with the Tribe web' +
+        ' service at the University of Pennsylvania',
+    long_description=open('README.rst').read(),
+    install_requires=[
+        'requests',
     ],
     classifiers=[
         'Environment :: Web Environment',
