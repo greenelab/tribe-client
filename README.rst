@@ -1,6 +1,6 @@
-=====
+====================
 Django Tribe Client
-=====
+====================
 
 Tribe client is a simple `Django <https://docs.djangoproject.com/en/dev/>`_ app
 to connect your server to the 'Tribe' web service (located at
