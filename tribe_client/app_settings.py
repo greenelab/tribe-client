@@ -10,8 +10,10 @@ try:
 
     TRIBE_REDIRECT_URI = getattr(settings, 'TRIBE_REDIRECT_URI', '')
 
-    ACCESS_CODE_URL = TRIBE_URL + "/oauth2/authorize/"
-    ACCESS_TOKEN_URL = TRIBE_URL + "/oauth2/token/"
+    ACCESS_CODE_URL = TRIBE_URL + '/oauth2/authorize/'
+    ACCESS_TOKEN_URL = TRIBE_URL + '/oauth2/token/'
+
+    TRIBE_SCOPE = getattr(settings, 'TRIBE_SCOPE', 'read')
 
 except ImportError:
     pass
