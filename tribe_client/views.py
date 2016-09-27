@@ -1,7 +1,6 @@
 from django.shortcuts import \
         get_object_or_404, render, render_to_response, redirect
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.template import Context, loader, RequestContext
 from django.utils import html
 from tribe_client import utils
 from tribe_client.app_settings import *
@@ -14,9 +13,19 @@ def connect_to_tribe(request):
                       {'tribe_url': TRIBE_URL,
                        'access_code_url': ACCESS_CODE_URL,
                        'client_id': TRIBE_ID,
-                       'scope': 'write'})
+                       'scope': TRIBE_SCOPE})
     else:
         return display_genesets(request)
+
+
+def get_settings(request):
+    tribe_settings = {'tribe_url': TRIBE_URL,
+                       'access_code_url': ACCESS_CODE_URL,
+                       'client_id': TRIBE_ID,
+                       'scope': TRIBE_SCOPE}
+
+    json_response = json.dumps(tribe_settings)
+    return HttpResponse(json_response, content_type='application/json')
 
 
 def logout_from_tribe(request):
