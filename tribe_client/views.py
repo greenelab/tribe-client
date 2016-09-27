@@ -13,16 +13,17 @@ def connect_to_tribe(request):
                       {'tribe_url': TRIBE_URL,
                        'access_code_url': ACCESS_CODE_URL,
                        'client_id': TRIBE_ID,
-                       'scope': TRIBE_SCOPE})
+                       'scope': TRIBE_SCOPE,
+                       'base_template': BASE_TEMPLATE})
     else:
         return display_genesets(request)
 
 
 def get_settings(request):
     tribe_settings = {'tribe_url': TRIBE_URL,
-                       'access_code_url': ACCESS_CODE_URL,
-                       'client_id': TRIBE_ID,
-                       'scope': TRIBE_SCOPE}
+                      'access_code_url': ACCESS_CODE_URL,
+                      'client_id': TRIBE_ID,
+                      'scope': TRIBE_SCOPE}
 
     json_response = json.dumps(tribe_settings)
     return HttpResponse(json_response, content_type='application/json')
@@ -57,7 +58,8 @@ def display_genesets(request):
             return render(request, 'display_genesets.html',
                           {'tribe_url': TRIBE_URL,
                            'genesets': genesets,
-                           'tribe_user': tribe_user})
+                           'tribe_user': tribe_user,
+                           'base_template': BASE_TEMPLATE})
 
     else:
         return connect_to_tribe(request)
@@ -80,7 +82,8 @@ def display_versions(request, geneset):
                     version['gene_list'].append(
                             annotation['gene']['standard_name'])
             return render(request, 'display_versions.html',
-                          {'versions': versions})
+                          {'versions': versions,
+                           'base_template': BASE_TEMPLATE})
 
 
 def return_access_token(request):

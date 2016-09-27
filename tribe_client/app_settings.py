@@ -15,5 +15,8 @@ try:
 
     TRIBE_SCOPE = getattr(settings, 'TRIBE_SCOPE', 'read')
 
+    BASE_TEMPLATE = getattr(settings, 'TRIBE_CLIENT_BASE_TEMPLATE',
+                            'base.html')
+
 except ImportError:
     pass
