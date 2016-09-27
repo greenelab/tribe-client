@@ -1,30 +1,30 @@
 ====================
-Django Tribe Client
+Tribe Client
 ====================
 
-Tribe client is a simple `Django <https://docs.djangoproject.com/en/dev/>`_ app
-to connect your server to the 'Tribe' web service (located at
-https://tribe.greenelab.com).
+Tribe client is a portable Python app to connect your bioinformatics server
+or tool to the 'Tribe' web service (located at https://tribe.greenelab.com).
 
-This python package allows web servers created using django to connect directly
-to Tribe and make use of its resources. Users of the client web server can
-login to access their Tribe resources via Tribe `OAuth2 <http://oauth.net/2/>`_
+This package allows web servers created using
+`Django <https://docs.djangoprojects.com/en/dev/>`_ to connect directly
+to Tribe and make use of its resources. Users of the client web server or tool
+can access their Tribe resources via Tribe `OAuth2 <http://oauth.net/2/>`_
 authentication.
 
 
 Download and Install
 ---------------------
-Tribe-client is registered as "django-tribe-client" in PyPI and is pip
+Tribe-client is registered as "tribe-client" in PyPI and is pip
 installable:
 
 .. code-block:: shell
 
-	pip install django-tribe-client
+	pip install tribe-client
 
 
 
-Quick Start
----------------------
+Quick Start with Django
+------------------------
 
 
 1. Add ``tribe_client`` to your ``INSTALLED_APPS`` setting:
