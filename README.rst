@@ -98,8 +98,9 @@ is 'read'. **Note:** The 'write' scope includes the 'read' scope access.
 7. (Optional) If you want to use tribe_client's templates, make sure you have
 a base template (which gets extended by your other templates and contains
 the ``{% block content %}   {% endblock %}`` statements) that the tribe_client
-templates can extend, and specify it in your settings. By default, tribe_client
-will look for a template called ``base.html``.
+templates can extend, and specify it in your settings. The name of this
+setting is ``TRIBE_CLIENT_BASE_TEMPLATE``. By default, tribe_client will
+look for a template called ``base.html``.
 
 .. code-block:: python
 
@@ -107,9 +108,17 @@ will look for a template called ``base.html``.
 
 
 8. (Optional) If you want to use tribe_client's built-in login templates and
-urls, make a link that takes the user to the ``/tribe_client`` url of your
-website (e.g. ``http://example.com/tribe_client``). This url shows users the
-built-in Tribe login page.
+urls, make a link that takes the user to the ``connect_to_tribe`` url in your
+website. This url will show users the built-in Tribe login page.
+Below is an example of this type of link in the webpage's navbar:
+
+.. code-block:: html
+
+    <div class="collapse navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url "connect_to_tribe" %}">Login with Tribe</a></li>
+      </ul>
+    </div>
 
 
 A Closer Look
