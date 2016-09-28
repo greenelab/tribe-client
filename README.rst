@@ -86,12 +86,27 @@ server plus "/tribe_client/get_token".
     TRIBE_REDIRECT_URI = 'http://example.com/tribe_client/get_token'
 
 
-6. Make sure that you have a ``base.html`` template that the tribe_client
-templates can extend
+6. Make sure that you have a base template (with ) that the tribe_client
+templates can extend. By default, tribe_client will look for a template
+called ``base.html``.
+
+.. code-block:: python
+
+    TRIBE_CLIENT_BASE_TEMPLATE = 'index.html'
 
 
-7. Make a link that takes the user to the ``/tribe_client`` url of your website
-for them to log in using Tribe
+7. Define in your ``settings.py`` the scope that your client server should have
+for Tribe resources. The two options are: 'read' and 'write'.
+The default is 'read'.
+**Note:** The 'write' scope includes the 'read' scope access. 
+
+.. code-block:: python
+
+    TRIBE_SCOPE = 'write'  # Or 'read'
+
+
+8. Make a link that takes the user to the ``/tribe_client`` url of your website
+(e.g. ``http://example.com/tribe_client``) for them to log in using Tribe.
 
 
 A Closer Look
