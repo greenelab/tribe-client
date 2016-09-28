@@ -98,7 +98,7 @@ is 'read'. **Note:** The 'write' scope includes the 'read' scope access.
 7. (Optional) If you want to use tribe_client's templates, make sure you have
 a base template (which gets extended by your other templates and contains
 the ``{% block content %}   {% endblock %}`` statements) that the tribe_client
-templates can extend, and specify it in your settings. The name of this
+templates can extend, and specify its name in your settings. The name of this
 setting is ``TRIBE_CLIENT_BASE_TEMPLATE``. By default, tribe_client will
 look for a template called ``base.html``.
 
