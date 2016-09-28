@@ -86,18 +86,7 @@ server plus "/tribe_client/get_token".
     TRIBE_REDIRECT_URI = 'http://example.com/tribe_client/get_token'
 
 
-6. Make sure that you have a base template (which gets extended by your
-other templates and contains the ``{% block content %}   {% endblock %}``
-statements) that the tribe_client templates can extend, and specify it in
-your settings. By default, tribe_client will look for a template
-called ``base.html``.
-
-.. code-block:: python
-
-    TRIBE_CLIENT_BASE_TEMPLATE = 'name_of_your_main_template.html'
-
-
-7. Define in your settings the scope that your client server should have
+6. Define in your settings the scope that your client server should have
 for Tribe resources. The two options are: 'read' and 'write'.The default
 is 'read'. **Note:** The 'write' scope includes the 'read' scope access. 
 
@@ -106,8 +95,21 @@ is 'read'. **Note:** The 'write' scope includes the 'read' scope access.
     TRIBE_SCOPE = 'write'  # Or 'read'
 
 
-8. Make a link that takes the user to the ``/tribe_client`` url of your website
-(e.g. ``http://example.com/tribe_client``) for them to log in using Tribe.
+7. (Optional) If you want to use tribe_client's templates, make sure you have
+a base template (which gets extended by your other templates and contains
+the ``{% block content %}   {% endblock %}`` statements) that the tribe_client
+templates can extend, and specify it in your settings. By default, tribe_client
+will look for a template called ``base.html``.
+
+.. code-block:: python
+
+    TRIBE_CLIENT_BASE_TEMPLATE = 'name_of_your_main_template.html'
+
+
+8. (Optional) If you want to use tribe_client's built-in login templates and
+urls, make a link that takes the user to the ``/tribe_client`` url of your
+website (e.g. ``http://example.com/tribe_client``). This url shows users the
+built-in Tribe login page.
 
 
 A Closer Look
