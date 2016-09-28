@@ -11,9 +11,9 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='tribe-client',
-    version='1.1.3',
-    author='Rene A. Zelaya',
-    author_email='tribe.greenelab@gmail.com',
+    version='1.1.4',
+    author='Greene Lab',
+    author_email='team@greenelab.com',
     packages=['tribe_client'],
     include_package_data=True,
     url='https://bitbucket.org/greenelab/tribe-client',
