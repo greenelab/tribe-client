@@ -32,7 +32,11 @@ def get_settings(request):
 
 def logout_from_tribe(request):
     request.session.clear()
-    return connect_to_tribe(request)
+
+    if TRIBE_LOGOUT_REDIRECT:
+        return HttpResponseRedirect(TRIBE_LOGOUT_REDIRECT)
+    else:
+        return connect_to_tribe(request)
 
 
 def get_token(request):
