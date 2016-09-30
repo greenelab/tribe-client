@@ -1,6 +1,7 @@
 from django.shortcuts import \
         get_object_or_404, render, render_to_response, redirect
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, \
+    HttpResponseRedirect
 from django.utils import html
 from tribe_client import utils
 from tribe_client.app_settings import *
@@ -39,7 +40,11 @@ def get_token(request):
     access_token = utils.get_access_token(access_code)
     request.session['tribe_token'] = access_token
     request.session['tribe_user'] = utils.retrieve_user_object(access_token)
-    return redirect('display_genesets')
+
+    if TRIBE_LOGIN_REDIRECT:
+        return HttpResponseRedirect(TRIBE_LOGIN_REDIRECT)
+    else:
+        return redirect('display_genesets')
 
 
 def display_genesets(request):
