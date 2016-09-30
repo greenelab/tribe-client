@@ -121,6 +121,30 @@ Below is an example of this type of link in the webpage's navbar:
     </div>
 
 
+9. (Optional) If you want to redirect your users to somewhere other than
+the ``/tribe_client/display_genesets`` url after they have logged in,
+you can define this in the ``TRIBE_LOGIN_REDIRECT`` setting in your
+``settings.py`` file. **Note:** If you are not using the tribe-client
+built-in templates (see above), you will need to define this setting so
+your users have somewhere to go after they log in.
+
+.. code-block:: python
+
+    TRIBE_LOGIN_REDIRECT = '/place-to-go-after-login'
+
+
+10. (Optional) If you want to redirect your users to somewhere other than
+the ``/tribe_client`` url after they log out, you can define this in the
+``TRIBE_LOGOUT_REDIRECT`` setting in your ``settings.py`` file.
+**Note:** If you are not using the tribe-client built-in templates (see above),
+you will need to define this setting so your users have somewhere to go after
+they log out.
+
+.. code-block:: python
+
+    TRIBE_LOGOUT_REDIRECT = '/place-to-go-after-logout'
+
+
 A Closer Look
 -----------------------------
 
