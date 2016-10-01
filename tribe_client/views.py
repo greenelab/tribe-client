@@ -1,7 +1,6 @@
-from django.shortcuts import \
-        get_object_or_404, render, render_to_response, redirect
-from django.http import HttpResponse, HttpResponseBadRequest, \
-    HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.http import (HttpResponse, HttpResponseBadRequest,
+                         HttpResponseRedirect)
 from django.utils import html
 from tribe_client import utils
 from tribe_client.app_settings import *
