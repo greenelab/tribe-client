@@ -14,7 +14,7 @@ authentication.
 
 Requirements
 ------------
-If you do use tribe-client in a web server that uses Django, we recommend
+If you are using tribe-client in a web server that uses Django, we recommend
 you use Django version 1.8 or newer.
 
 
