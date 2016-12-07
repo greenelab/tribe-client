@@ -1,8 +1,8 @@
 ====================
-Tribe Client
+Tribe-Client
 ====================
 
-Tribe client is a portable Python app to connect your bioinformatics server
+Tribe-client is a portable Python app to connect your bioinformatics server
 or tool to the 'Tribe' web service (located at https://tribe.greenelab.com).
 
 This package allows web servers created using
@@ -10,6 +10,12 @@ This package allows web servers created using
 to Tribe and make use of its resources. Users of the client web server or tool
 can access their Tribe resources via Tribe `OAuth2 <http://oauth.net/2/>`_
 authentication.
+
+
+Requirements
+------------
+If you do use tribe-client in a web server that uses Django, we recommend
+you use Django version 1.8 or newer.
 
 
 Download and Install
