@@ -1,6 +1,45 @@
-import requests
 import json
-from app_settings import *
+import pickle
+import requests
+
+from app_settings import (
+    TRIBE_URL, TRIBE_ID, TRIBE_SECRET, TRIBE_REDIRECT_URI,
+    ACCESS_TOKEN_URL, CROSSREF, PUBLIC_GENESET_DEST)
+
+import logging
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
+
+
+def get_organism_uri(scientific_name, tribe_url=None):
+    """
+    This function returns the uri for an organism resource in Tribe,
+    given the organism's scientific name.
+    """
+
+    if not tribe_url:
+        tribe_url = TRIBE_URL
+
+    if not tribe_url:
+        logger.error('Both the "tribe_url" argument for this function and '
+                     'the TRIBE_URL setting have not been defined, so Tribe '
+                     'location is unspecified. Ending function without '
+                     'requesting organism.')
+        quit()
+
+    # This filters organisms by scientific name in the 'organisms' endpoint
+    # of Tribe's API. This returns a dictionary with 'meta' and 'objects' keys.
+    parameters = {'scientific_name': scientific_name}
+    organism_request = requests.get(tribe_url + '/api/v1/organism',
+                                    params=parameters)
+    org_response = organism_request.json()
+
+    # The 'objects' key always contains a list (even when there is just one
+    # element). Put this organism object's resource_uri in geneset_info.
+    organism_obj = org_response['objects'][0]
+    organism_uri = organism_obj['resource_uri']
+
+    return organism_uri
 
 
 def get_access_token(authorization_code):
@@ -33,7 +72,7 @@ def get_access_token(authorization_code):
         return None
 
 
-def retrieve_public_genesets(options={}):
+def retrieve_public_genesets(options={}, retrieve_all=False):
     """
     Returns only public genesets. This will not return any of the
     private ones since no oauth token is sent with this request.
@@ -41,6 +80,12 @@ def retrieve_public_genesets(options={}):
     Arguments:
     options -- An optional dictionary to be sent as request parameters
     (to filter the types of genesets requested, etc.)
+
+    retrieve_all --  A boolean value. If this is True, the function will
+    keep requesting the next result page (from meta['next'] in the Tribe
+    response), and adding those genesets to the geneset list that is
+    returned, until meta['next'] is null/None (meaning that there is no
+    next page).
 
     Returns:
     Either -
@@ -52,9 +97,22 @@ def retrieve_public_genesets(options={}):
     genesets_url = TRIBE_URL + '/api/v1/geneset/'
 
     try:
+        genesets = []
+
         tribe_connection = requests.get(genesets_url, params=options)
         result = tribe_connection.json()
-        genesets = result['objects']
+        genesets.extend(result['objects'])
+
+        if retrieve_all is True:
+            meta = result['meta']
+
+            while meta['next'] is not None:
+                genesets_url = TRIBE_URL + meta['next']
+                tribe_connection = requests.get(genesets_url)
+                result = tribe_connection.json()
+                genesets.extend(result['objects'])
+                meta = result['meta']
+
         return genesets
 
     except:
@@ -161,7 +219,10 @@ def retrieve_user_genesets(access_token, options={}):
 
             tribe_connection = requests.get(genesets_url, params=options)
             result = tribe_connection.json()
-            meta = result['meta']
+
+            # The objects we want will be in the 'objects' key of the
+            # response. Metadata for this response will be in the 'meta' key
+            # of the response.
             genesets = result['objects']
             return genesets
 
@@ -195,7 +256,9 @@ def retrieve_user_geneset_versions(access_token, geneset):
         versions_url = TRIBE_URL + '/api/v1/version/'
         tribe_connection = requests.get(versions_url, params=parameters)
         result = tribe_connection.json()
-        meta = result['meta']
+
+        # The objects we want will be in the 'objects' key of the response.
+        # Metadata for this response will be in the 'meta' key of the response.
         versions = result['objects']
         return versions
 
@@ -223,18 +286,9 @@ def create_remote_geneset(access_token, geneset_info, tribe_url):
     a) The newly created geneset (as a dictionary), or
     b) An empty list, if the request failed.
     """
-
-    # This filters organisms by scientific name in the 'organisms' endpoint
-    # of Tribe's API. This returns a dictionary with 'meta' and 'objects' keys.
-    parameters = {'scientific_name': geneset_info['organism']}
-    organism_request = requests.get(tribe_url + '/api/v1/organism',
-                                    params=parameters)
-    org_response = organism_request.json()
-
-    # The 'objects' key always contains a list (even when there is just one
-    # element). Put this organism object's resource_uri in geneset_info.
-    organism_obj = org_response['objects'][0]
-    geneset_info['organism'] = organism_obj['resource_uri']
+    # Get Tribe organism resource uri from the given scientific name
+    organism_uri = get_organism_uri(geneset_info['organism'], tribe_url)
+    geneset_info['organism'] = organism_uri
 
     headers = {'Authorization': 'OAuth ' + access_token,
                'Content-Type': 'application/json'}
@@ -326,3 +380,77 @@ def obtain_token_using_credentials(username, password, client_id,
     r = requests.post(access_token_url, data=payload)
     tribe_response = r.json()
     return tribe_response['access_token']
+
+
+def pickle_organism_public_genesets(organism, public_geneset_dest=None):
+    """
+    Function to download all the public genesets available for an organism,
+    and store their pickled form in a file.
+
+    Arguments:
+    organism -- A string, of the scientific name for the desired species
+
+    public_geneset_dest --  A string. Location (including file name) of the
+    file that will contain the pickled genesets.
+
+    Returns:
+    Either -
+
+    a) A list of genesets (as dictionaries), or
+    b) An empty list, if the request failed.
+
+    """
+
+    # Apparently, Tribe does not like requests for more than 1500 genesets
+    # at a time.
+    go_public_genes = retrieve_public_genesets(
+        {'show_tip': 'true', 'limit': '1500',
+         'organism__scientific_name': organism, 'title__startswith': 'GO'},
+        retrieve_all=True)
+
+    kegg_public_genes = retrieve_public_genesets(
+        {'show_tip': 'true', 'limit': '1500',
+         'organism__scientific_name': organism, 'title__startswith': 'KEGG'},
+        retrieve_all=True)
+
+    omim_public_genes = retrieve_public_genesets(
+        {'show_tip': 'true', 'limit': '1500',
+         'organism__scientific_name': organism, 'title__startswith': 'DO'},
+        retrieve_all=True)
+
+    all_public_genesets = {'Gene Ontology': go_public_genes,
+                           'KEGG': kegg_public_genes,
+                           'OMIM': omim_public_genes}
+
+    pgenes_filt = {}
+    allgenes = set()
+    for title, public_genes in all_public_genesets.iteritems():
+
+        pgenes_small = []
+        for pgs in public_genes:
+            pgenes = set(pgs['tip']['genes'])
+
+            if len(pgenes) > 300:
+                continue
+
+            allgenes |= pgenes
+            creator = pgs['creator']['username']
+            slug = pgs['slug']
+            url = TRIBE_URL + '/#/use/detail/' + creator + '/' + slug
+            pgs['url'] = url
+
+            pgenes_small.append(pgs)
+
+        pgenes_filt[title] = pgenes_small
+
+    if not public_geneset_dest:
+        public_geneset_dest = PUBLIC_GENESET_DEST
+
+    if not public_geneset_dest:
+        logger.error('Both the "public_geneset_dest" argument for this '
+                     'function and the PUBLIC_GENESET_DEST setting have not '
+                     'been defined, so no file with the pickled genesets is '
+                     'is being written. Ending function.')
+        quit()
+
+    pickle.dump((pgenes_filt, len(allgenes)), open(public_geneset_dest, 'wb'))
