@@ -394,10 +394,7 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None):
     file that will contain the pickled genesets.
 
     Returns:
-    Either -
-
-    a) A list of genesets (as dictionaries), or
-    b) An empty list, if the request failed.
+    Nothing, it just writes the pickled genesets to the specified file.
 
     """
 
