@@ -15,6 +15,18 @@ def get_organism_uri(scientific_name, tribe_url=None):
     """
     This function returns the uri for an organism resource in Tribe,
     given the organism's scientific name.
+
+    Arguments:
+    scientific_name -- A string. Scientific name of the species for which
+    we want the Tribe resource uri (e.g. "Homo sapiens",
+    "Pseudomonas aeruginosa")
+
+    tribe_url -- Optional argument, a string. URL for the desired Tribe
+    instance. If this is not passed, it will default to the public Tribe
+    instance.
+
+    Returns:
+    organism_uri -- A string. Resource URI for the desired organism in Tribe.
     """
 
     if not tribe_url:
