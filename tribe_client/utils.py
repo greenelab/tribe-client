@@ -394,7 +394,8 @@ def obtain_token_using_credentials(username, password, client_id,
     return tribe_response['access_token']
 
 
-def pickle_organism_public_genesets(organism, public_geneset_dest=None):
+def pickle_organism_public_genesets(organism, public_geneset_dest=None,
+                                    max_gene_num=300):
     """
     Function to download all the public genesets available for an organism,
     and store their pickled form in a file.
@@ -402,8 +403,20 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None):
     Arguments:
     organism -- A string, of the scientific name for the desired species
 
-    public_geneset_dest --  A string. Location (including file name) of the
-    file that will contain the pickled genesets.
+    public_geneset_dest --  Optional argument, a string. Location (including
+    file name) of the file that will contain the pickled genesets. If
+    this argument is not passed, the function will try to get the location
+    from the PUBLIC_GENESET_DEST django setting. If this setting is not
+    defined either, the function will log an error and quit, as it needs at
+    least one of these two locations to be defined to know where to put
+    the pickled genesets.
+
+    max_gene_num -- Optional argument, an integer. If a geneset contains more
+    this number of genes, it will get filtered out and not included in the
+    pickle. The value passed can technically be a string, but only if it
+    can be coerced into an integer (e.g. '300' instead of 300), as int() is
+    called on this argument. However, if it can't be coerced, a ValueError is
+    thrown.
 
     Returns:
     Nothing, it just writes the pickled genesets to the specified file.
@@ -431,26 +444,35 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None):
                            'KEGG': kegg_public_genes,
                            'OMIM': omim_public_genes}
 
-    pgenes_filt = {}
+    filtered_geneset_dict = {}
     allgenes = set()
-    for title, public_genes in all_public_genesets.iteritems():
 
-        pgenes_small = []
-        for pgs in public_genes:
-            pgenes = set(pgs['tip']['genes'])
+    for gs_type, genesets in all_public_genesets.iteritems():
 
-            if len(pgenes) > 300:
+        # This next piece of code will filter out genesets that have more
+        # than a certain number of genes (set by the max_gene_num parameter).
+        # These large genesets probably would be computationally expensive to
+        # handle and also not very biologically informative.
+        # Also, the url for the geneset's "detail" page in Tribe is built for
+        # each geneset and added to each geneset dictionary.
+        filtered_genesets = []
+        for geneset in genesets:
+
+            gs_genes = set(geneset['tip']['genes'])
+
+            if len(gs_genes) > int(max_gene_num):
                 continue
 
-            allgenes |= pgenes
-            creator = pgs['creator']['username']
-            slug = pgs['slug']
+            allgenes |= gs_genes
+
+            creator = geneset['creator']['username']
+            slug = geneset['slug']
             url = TRIBE_URL + '/#/use/detail/' + creator + '/' + slug
-            pgs['url'] = url
+            geneset['url'] = url
 
-            pgenes_small.append(pgs)
+            filtered_genesets.append(geneset)
 
-        pgenes_filt[title] = pgenes_small
+        filtered_geneset_dict[gs_type] = filtered_genesets
 
     if not public_geneset_dest:
         public_geneset_dest = PUBLIC_GENESET_DEST
@@ -462,4 +484,5 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None):
                      'is being written. Ending function.')
         quit()
 
-    pickle.dump((pgenes_filt, len(allgenes)), open(public_geneset_dest, 'wb'))
+    pickle.dump((filtered_geneset_dict, len(allgenes)),
+                open(public_geneset_dest, 'wb'))
