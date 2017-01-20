@@ -25,3 +25,5 @@ BASE_TEMPLATE = getattr(settings, 'TRIBE_CLIENT_BASE_TEMPLATE',
                         'base.html')
 
 PUBLIC_GENESET_DEST = getattr(settings, 'PUBLIC_GENESET_DEST', None)
+
+MAX_GENES_IN_PGENESETS = getattr(settings, 'MAX_GENES_IN_PGENESETS', 300)

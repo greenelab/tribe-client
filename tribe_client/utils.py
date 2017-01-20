@@ -4,7 +4,7 @@ import requests
 
 from app_settings import (
     TRIBE_URL, TRIBE_ID, TRIBE_SECRET, TRIBE_REDIRECT_URI,
-    ACCESS_TOKEN_URL, CROSSREF, PUBLIC_GENESET_DEST)
+    ACCESS_TOKEN_URL, CROSSREF, PUBLIC_GENESET_DEST, MAX_GENES_IN_PGENESETS)
 
 import logging
 logger = logging.getLogger(__name__)
@@ -395,13 +395,15 @@ def obtain_token_using_credentials(username, password, client_id,
 
 
 def pickle_organism_public_genesets(organism, public_geneset_dest=None,
-                                    max_gene_num=300):
+                                    max_gene_num=None):
     """
     Function to download all the public genesets available for an organism,
     and store their pickled form in a file.
 
+
     Arguments:
     organism -- A string, of the scientific name for the desired species
+
 
     public_geneset_dest --  Optional argument, a string. Location (including
     file name) of the file that will contain the pickled genesets. If
@@ -411,12 +413,20 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None,
     least one of these two locations to be defined to know where to put
     the pickled genesets.
 
+
     max_gene_num -- Optional argument, an integer. If a geneset contains more
     this number of genes, it will get filtered out and not included in the
-    pickle. The value passed can technically be a string, but only if it
+    pickle. If this argument is not passed, this value will automatically
+    get drawn from the MAX_GENES_IN_PGENESETS setting (which defaults to
+    300). However, this can be overriden by either:
+    a) Assigning a new value to that setting in Django settings, or
+    b) Passing a value for this argument.
+
+    The value passed can technically be a string, but only if it
     can be coerced into an integer (e.g. '300' instead of 300), as int() is
     called on this argument. However, if it can't be coerced, a ValueError is
     thrown.
+
 
     Returns:
     Nothing, it just writes the pickled genesets to the specified file.
@@ -443,6 +453,9 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None,
     all_public_genesets = {'Gene Ontology': go_public_genes,
                            'KEGG': kegg_public_genes,
                            'OMIM': omim_public_genes}
+
+    if not max_gene_num:
+        max_gene_num = MAX_GENES_IN_PGENESETS
 
     filtered_geneset_dict = {}
     allgenes = set()
