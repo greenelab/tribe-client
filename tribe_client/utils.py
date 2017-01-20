@@ -1,10 +1,11 @@
+import os
 import json
 import pickle
 import requests
 
 from app_settings import (
     TRIBE_URL, TRIBE_ID, TRIBE_SECRET, TRIBE_REDIRECT_URI,
-    ACCESS_TOKEN_URL, CROSSREF, PUBLIC_GENESET_DEST, MAX_GENES_IN_PGENESETS)
+    ACCESS_TOKEN_URL, CROSSREF, PUBLIC_GENESET_FOLDER, MAX_GENES_IN_PGENESETS)
 
 import logging
 logger = logging.getLogger(__name__)
@@ -488,7 +489,10 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None,
         filtered_geneset_dict[gs_type] = filtered_genesets
 
     if not public_geneset_dest:
-        public_geneset_dest = PUBLIC_GENESET_DEST
+        pickled_genesets_filename = (organism.replace(' ', '_') + '_' +
+                                     'pickled_genesets')
+        public_geneset_dest = os.path.join(PUBLIC_GENESET_FOLDER,
+                                           pickled_genesets_filename)
 
     if not public_geneset_dest:
         logger.error('Both the "public_geneset_dest" argument for this '
