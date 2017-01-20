@@ -409,7 +409,8 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None,
     public_geneset_dest --  Optional argument, a string. Location (including
     file name) of the file that will contain the pickled genesets. If
     this argument is not passed, the function will try to get the location
-    from the PUBLIC_GENESET_DEST django setting. If this setting is not
+    from the PUBLIC_GENESET_FOLDER django setting, and then build the
+    filename from the organism scientific_name. If PUBLIC_GENESET_FOLDER is not
     defined either, the function will log an error and quit, as it needs at
     least one of these two locations to be defined to know where to put
     the pickled genesets.
