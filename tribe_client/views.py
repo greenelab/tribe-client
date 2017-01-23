@@ -220,21 +220,37 @@ def return_user_obj(request):
 
 
 def return_unpickled_genesets(request):
-    organism = request.POST.get('organism')
+    organism = request.GET.get('organism')
+
+    if not organism:
+        logger.error(
+            'No organism was sent in request made to '
+            'return_unpickled_genesets() function.')
+        return HttpResponseBadRequest(
+            "No organism scientific name was sent in the request. Please "
+            "specify an organism's scientific name (e.g. 'Pseudomonas "
+            "aeruginosa' or 'Homo sapiens') using the 'organism' parameter.")
+
     pickled_filename = organism.replace(' ', '_') + '_pickled_genesets'
 
     public_genesets = {}
-
     if PUBLIC_GENESET_FOLDER:
-        pickled_filename_path = (PUBLIC_GENESET_FOLDER + pickled_filename)
+        pickled_filename_path = os.path.join(
+            PUBLIC_GENESET_FOLDER, pickled_filename)
+
         if os.path.exists(pickled_filename_path):
             unpickled_contents = pickle.load(open(pickled_filename_path))
             public_genesets = unpickled_contents[0]
-            allgenes_num = unpickled_contents[1]
+        else:
+            logger.error(
+                ('No pickled genesets file was found for organism with '
+                 'scientific name {0} in return_unpickled_genesets() '
+                 'function').format(organism))
 
     else:
-        logger.error('return_unpickled_genesets function was called, but '
-                     'PUBLIC_GENESET_FOLDER setting has not been defined.')
+        logger.error(
+            'return_unpickled_genesets function was called, but '
+            'PUBLIC_GENESET_FOLDER setting has not been defined.')
 
     usergenesets = {}
     if 'tribe_genesets' in request.session:
@@ -242,6 +258,8 @@ def return_unpickled_genesets(request):
     elif 'tribe_token' in request.session:
         tribe_token = request.session['tribe_token']
         usergenesets['My Gene Sets'] = utils.retrieve_user_genesets(tribe_token)
+
+    all_genes = set()
 
     geneset_dict, gene_dict = defaultdict(dict), defaultdict(set)
 
@@ -261,15 +279,19 @@ def return_unpickled_genesets(request):
             else:
                 genes = set()
 
+            all_genes |= genes
+
             geneset_dict[geneset_id] = {'name': title, 'dbase': database,
                                         'url': url, 'size': len(genes)}
             for g in genes:
                 gene_dict[str(g)].add(geneset_id)
 
-    gene_dict = {gene: list(gs_set) for (gene, gs_set) in gene_dict.iteritems()}
+    gene_dict = {
+        gene: list(gs_set) for (gene, gs_set) in gene_dict.iteritems()
+    }
 
     response_dict = {'procs': geneset_dict, 'genes': gene_dict,
-                     'bgtotal': allgenes_num}
+                     'bgtotal': len(all_genes)}
     json_response = json.dumps(response_dict)
 
     return HttpResponse(json_response, content_type='application/json')
