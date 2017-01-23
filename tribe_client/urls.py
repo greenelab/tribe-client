@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^token$', views.return_access_token, name='return_access_token'),
     url(r'^return_user$', views.return_user_obj, name='return_user'),
     url(r'^create_geneset$', views.create_geneset, name='create_geneset'),
+    url(r'^return_unpickled_genesets$', views.return_unpickled_genesets,
+        name='return_unpickled_genesets')
 ]

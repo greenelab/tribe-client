@@ -1,10 +1,26 @@
+import os
+import itertools
+import json
+import logging
+import pickle
+
+from collections import defaultdict
+
 from django.shortcuts import render, redirect
 from django.http import (HttpResponse, HttpResponseBadRequest,
                          HttpResponseRedirect)
 from django.utils import html
+
 from tribe_client import utils
-from tribe_client.app_settings import *
-import json
+
+from app_settings import (
+    TRIBE_URL, TRIBE_ID, TRIBE_SCOPE, ACCESS_CODE_URL,
+    BASE_TEMPLATE, TRIBE_LOGIN_REDIRECT, TRIBE_LOGOUT_REDIRECT,
+    CROSSREF, PUBLIC_GENESET_FOLDER
+)
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 
 def connect_to_tribe(request):
@@ -200,4 +216,60 @@ def return_user_obj(request):
     tribe_response = utils.return_user_object(tribe_token)
 
     json_response = json.dumps(tribe_response)
+    return HttpResponse(json_response, content_type='application/json')
+
+
+def return_unpickled_genesets(request):
+    organism = request.POST.get('organism')
+    pickled_filename = organism.replace(' ', '_') + '_pickled_genesets'
+
+    public_genesets = {}
+
+    if PUBLIC_GENESET_FOLDER:
+        pickled_filename_path = (PUBLIC_GENESET_FOLDER + pickled_filename)
+        if os.path.exists(pickled_filename_path):
+            unpickled_contents = pickle.load(open(pickled_filename_path))
+            public_genesets = unpickled_contents[0]
+            allgenes_num = unpickled_contents[1]
+
+    else:
+        logger.error('return_unpickled_genesets function was called, but '
+                     'PUBLIC_GENESET_FOLDER setting has not been defined.')
+
+    usergenesets = {}
+    if 'tribe_genesets' in request.session:
+        usergenesets['My Gene Sets'] = request.session['tribe_genesets']
+    elif 'tribe_token' in request.session:
+        tribe_token = request.session['tribe_token']
+        usergenesets['My Gene Sets'] = utils.retrieve_user_genesets(tribe_token)
+
+    geneset_dict, gene_dict = defaultdict(dict), defaultdict(set)
+
+    for database, genesets in itertools.chain(public_genesets.iteritems(),
+                                              usergenesets.iteritems()):
+        for geneset in genesets:
+
+            if 'tip' not in geneset or geneset['tip'] is None:
+                continue
+
+            geneset_id = str(geneset['id'])
+            title = geneset['title']
+            url = geneset['url'] if 'url' in geneset else ''
+
+            if 'genes' in geneset['tip']:
+                genes = set(geneset['tip']['genes'])
+            else:
+                genes = set()
+
+            geneset_dict[geneset_id] = {'name': title, 'dbase': database,
+                                        'url': url, 'size': len(genes)}
+            for g in genes:
+                gene_dict[str(g)].add(geneset_id)
+
+    gene_dict = {gene: list(gs_set) for (gene, gs_set) in gene_dict.iteritems()}
+
+    response_dict = {'procs': geneset_dict, 'genes': gene_dict,
+                     'bgtotal': allgenes_num}
+    json_response = json.dumps(response_dict)
+
     return HttpResponse(json_response, content_type='application/json')
