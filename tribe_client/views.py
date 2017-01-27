@@ -256,7 +256,7 @@ def return_unpickled_genesets(request):
     genesets.
 
     *N.B. The reason the dictionary in the response is formatted the way
-    the it is is that this code was based on some code in the GIANT webserver
+    it is is that this code was based on some code in the GIANT webserver
     from the Troyanskaya lab. The front-end JavaScript code in GIANT expects
     a response in this format in order to calculate geneset enrichment, and
     consequently the front-end code in new webservers (like Adage) will be
@@ -316,10 +316,10 @@ def return_unpickled_genesets(request):
         # the session, or in other words if the user has logged in to Tribe
         # via this client server and authorized this server to use their
         # Tribe resources. If this is false, meaning the user is not logged
-        # in, do not try to get user private genesets, just unpickle and
-        # public genesets.
+        # in, do not try to get user private genesets, just unpickle public
+        # genesets.
         tribe_token = request.session['tribe_token']
-        options = {'organism__species_name': organism}
+        options = {'organism__species_name': organism, 'limit': '1500'}
         usergenesets['My Gene Sets'] = \
             utils.retrieve_user_genesets(tribe_token, options)
 
@@ -328,7 +328,7 @@ def return_unpickled_genesets(request):
     # geneset_dict will be a dictionary of geneset information (but not
     # including the actual genes in the geneset). This will come in the
     # gene_dict dictionary, where each key will be the gene Entrez ID,
-    # and each value will be a list of the genesets that the gene  is in.
+    # and each value will be a list of the genesets that the gene is in.
     geneset_dict, gene_dict = defaultdict(dict), defaultdict(set)
 
     for database, genesets in itertools.chain(public_genesets.iteritems(),
