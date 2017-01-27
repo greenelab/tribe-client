@@ -220,6 +220,49 @@ def return_user_obj(request):
 
 
 def return_unpickled_genesets(request):
+    """
+    View that:
+
+    a) unpickles public genesets from an organism's pickled public
+    genesets file,
+
+    b) requests the currently logged-in user's genesets (for that same
+    organism) from Tribe,
+
+    c) combines all of these genesets and puts the geneset information
+    (including which genes are contained in which genesets) in a very
+    different format, so that the front-end can run a geneset enrichment
+    analysis.
+
+    Arguments:
+    request -- Request object, which contains a dictionary-like object
+    of GET data, among other things.
+
+    * The GET data should contain an 'organism' parameter. This should be
+    a string of an organism's scientific name (e.g. 'Pseudomonas aeruginosa',
+    or 'Homo sapiens').
+
+    Returns:
+
+    A json-ified dictionary, which has 3 key-value pairs:
+    1) 'procs': A dictionary of geneset information, where each key is
+    the Tribe geneset ID, and the value is another dictionary containing
+    geneset information.
+
+    2) 'genes': A dictionary, where each key is the gene Entrez ID and
+    the value is a list of Tribe geneset ID's that contain this gene.
+
+    3) 'bgtotal': Total count of all the different genes in all of the
+    genesets.
+
+    *N.B. The reason the dictionary in the response is formatted the way
+    the it is is that this code was based on some code in the GIANT webserver
+    from the Troyanskaya lab. The front-end JavaScript code in GIANT expects
+    a response in this format in order to calculate geneset enrichment, and
+    consequently the front-end code in new webservers (like Adage) will be
+    built following this structure.
+
+    """
     organism = request.GET.get('organism')
 
     if not organism:
@@ -249,18 +292,43 @@ def return_unpickled_genesets(request):
 
     else:
         logger.error(
-            'return_unpickled_genesets function was called, but '
+            'return_unpickled_genesets() function was called, but '
             'PUBLIC_GENESET_FOLDER setting has not been defined.')
 
+    # The code in the lines below gets the currently logged-in user's
+    # genesets from Tribe (for the desired organism). If the user genesets
+    # are cached in the user's session, then grab those genesets and filter
+    # by organism. Otherwise, request the user genesets from Tribe for
+    # the given organism.
     usergenesets = {}
     if 'tribe_genesets' in request.session:
-        usergenesets['My Gene Sets'] = request.session['tribe_genesets']
+        # User's Tribe genesets are cached in the session
+        loggedin_user_genesets = request.session['tribe_genesets']
+        usergenesets['My Gene Sets'] = []
+        for geneset in loggedin_user_genesets:
+            if geneset['organism']['scientific_name'] == organism:
+                usergenesets['My Gene Sets'].append(geneset)
+        usergenesets['My Gene Sets'] = loggedin_user_genesets
+
     elif 'tribe_token' in request.session:
+        # There are no user genesets cached in the session - request them
+        # from Tribe. *Note: This checks if there is a 'tribe_token' in
+        # the session, or in other words if the user has logged in to Tribe
+        # via this client server and authorized this server to use their
+        # Tribe resources. If this is false, meaning the user is not logged
+        # in, do not try to get user private genesets, just unpickle and
+        # public genesets.
         tribe_token = request.session['tribe_token']
-        usergenesets['My Gene Sets'] = utils.retrieve_user_genesets(tribe_token)
+        options = {'organism__species_name': organism}
+        usergenesets['My Gene Sets'] = \
+            utils.retrieve_user_genesets(tribe_token, options)
 
     all_genes = set()
 
+    # geneset_dict will be a dictionary of geneset information (but not
+    # including the actual genes in the geneset). This will come in the
+    # gene_dict dictionary, where each key will be the gene Entrez ID,
+    # and each value will be a list of the genesets that the gene  is in.
     geneset_dict, gene_dict = defaultdict(dict), defaultdict(set)
 
     for database, genesets in itertools.chain(public_genesets.iteritems(),
@@ -268,6 +336,9 @@ def return_unpickled_genesets(request):
         for geneset in genesets:
 
             if 'tip' not in geneset or geneset['tip'] is None:
+                # The 'tip' is the latest geneset version. If there is no
+                # tip, the geneset has no versions, meaning that it contains
+                # no genes. In this case, just skip this geneset.
                 continue
 
             geneset_id = str(geneset['id'])
@@ -279,8 +350,15 @@ def return_unpickled_genesets(request):
             else:
                 genes = set()
 
+            # Add genes to our set containing ALL the genes in all the
+            # genesets.
             all_genes |= genes
 
+            # Make a dictionary with just the geneset information (no genes).
+            # The front-end code will only use this information if it
+            # determines that this geneset is one of the ones enriched.
+            # This will make the geneset-enrichment-calculating process
+            # in the front-end more efficient.
             geneset_dict[geneset_id] = {'name': title, 'dbase': database,
                                         'url': url, 'size': len(genes)}
             for g in genes:
