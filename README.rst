@@ -151,6 +151,27 @@ they log out.
     TRIBE_LOGOUT_REDIRECT = '/place-to-go-after-logout'
 
 
+11. (Optional) If you want to download and pickle gene sets/collections from
+Tribe by using the ``tribe_client_pickle_public_genesets`` management command,
+you can customize the following setting:
+
+.. code-block:: python
+
+    PUBLIC_GENESET_FOLDER = os.path.join(
+        <server directory>, <folder for pickled gene sets files>)
+
+
+and run the following management command: 
+
+.. code-block:: shell
+
+    python manage.py tribe_client_pickle_public_genesets
+
+
+This will download and pickle all the public Tribe collections for every
+organism in your database.
+
+
 A Closer Look
 -----------------------------
 
