@@ -153,10 +153,13 @@ they log out.
 
 11. (Optional) If you want to download and pickle gene sets/collections from
 Tribe by using the ``tribe_client_pickle_public_genesets`` management command,
-you can customize the following setting:
+you can customize the following setting in ``settings.py``:
 
 .. code-block:: python
-
+    
+    # Location of folder where pickled gene set files will be saved to.
+    # This can be a subdirectory in your server's path (as shown here),
+    # or not.
     PUBLIC_GENESET_FOLDER = os.path.join(
         <server directory>, <folder for pickled gene sets files>)
 
