@@ -153,7 +153,7 @@ they log out.
 
 11. (Optional) If you want to download and pickle gene sets/collections from
 Tribe by using the ``tribe_client_pickle_public_genesets`` management command,
-you can customize the following setting in ``settings.py``:
+you must customize the following setting in ``settings.py``:
 
 .. code-block:: python
     
@@ -172,7 +172,10 @@ and run the following management command:
 
 
 This will download and pickle all the public Tribe collections for every
-organism in your database.
+organism in your database. This is handy in case you want to do many gene
+set enrichment analyses across thousands of gene sets saved in Tribe, or any
+other task that would require making frequent, large, time-consuming requests
+for gene sets.
 
 
 A Closer Look
