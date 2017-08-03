@@ -1,0 +1,6 @@
+*~
+*.pyc
+tribe_client.egg-info/
+dist/
+tribeclientenv/
+docs/build/

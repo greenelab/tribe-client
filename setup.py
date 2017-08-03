@@ -11,12 +11,12 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='tribe-client',
-    version='1.1.8',
+    version='1.1.9',
     author='Greene Lab',
     author_email='team@greenelab.com',
     packages=find_packages(),
     include_package_data=True,
-    url='https://bitbucket.org/greenelab/tribe-client',
+    url='https://github.com/greenelab/tribe-client',
     license='LICENSE.txt',
     description='Portable Python package to connect with the Tribe web' +
         ' service at the University of Pennsylvania',
