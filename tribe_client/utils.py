@@ -422,22 +422,12 @@ def download_organism_public_genesets(organism, creator_username=None):
     if creator_username:
         request_params['creator__username'] = creator_username
 
-    request_params['title__startswith'] = 'GO'
-    go_public_genes = retrieve_public_genesets(request_params,
-                                               retrieve_all=True)
-
-    request_params['title__startswith'] = 'KEGG'
-    kegg_public_genes = retrieve_public_genesets(request_params,
-                                                 retrieve_all=True)
-
-    request_params['title__startswith'] = 'DO'
-    omim_public_genes = retrieve_public_genesets(request_params,
-                                                 retrieve_all=True)
-
-    all_public_genesets = {'Gene Ontology': go_public_genes,
-                           'KEGG': kegg_public_genes,
-                           'OMIM': omim_public_genes}
-
+    pairs = {'GO': 'Gene Ontology', 'KEGG': 'KEGG', 'DO': 'OMIM'}
+    all_public_genesets = dict()
+    for k, v in pairs.items():
+        request_params['title__startswith'] = k
+        all_public_genesets[v] = retrieve_public_genesets(request_params,
+                                                          retrieve_all=True)
     return all_public_genesets
 
 
