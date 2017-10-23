@@ -395,16 +395,50 @@ def obtain_token_using_credentials(username, password, client_id,
     return tribe_response['access_token']
 
 
+def download_organism_public_genesets(organism, creator_username=None):
+    """
+    Function to download all the public genesets available for a given
+    organism, and optionally, for a given creator username.
+
+    Arguments:
+    organism -- A string, of the scientific name for the desired species.
+
+    creator_username --  Optional argument, a string. Filter the genesets
+    downloaded from Tribe to get only the ones created by the user with
+    this username.
+
+    Returns:
+    all_public_genesets -- A dictionary of GO, KEGG and DO terms available
+    in Tribe for the specified organism (and optionally, creator_username).
+    """
+
+    # *Note: Tribe does not like requests for more than 1500
+    # genesets at a time, so use this as the 'limit' parameter.
+    request_params = {
+        'show_tip': 'true', 'limit': '1500',
+        'organism__scientific_name': organism
+    }
+
+    if creator_username:
+        request_params['creator__username'] = creator_username
+
+    pairs = {'GO': 'Gene Ontology', 'KEGG': 'KEGG', 'DO': 'OMIM'}
+    all_public_genesets = dict()
+    for k, v in pairs.items():
+        request_params['title__startswith'] = k
+        all_public_genesets[v] = retrieve_public_genesets(request_params,
+                                                          retrieve_all=True)
+    return all_public_genesets
+
+
 def pickle_organism_public_genesets(organism, public_geneset_dest=None,
                                     max_gene_num=None):
     """
-    Function to download all the public genesets available for an organism,
-    and store their pickled form in a file.
-
+    Function to pickle genesets returned by the
+    download_organism_public_genesets() function above into a file.
 
     Arguments:
     organism -- A string, of the scientific name for the desired species
-
 
     public_geneset_dest --  Optional argument, a string. Location (including
     file name) of the file that will contain the pickled genesets. If
@@ -414,7 +448,6 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None,
     defined either, the function will log an error and quit, as it needs at
     least one of these two locations to be defined to know where to put
     the pickled genesets.
-
 
     max_gene_num -- Optional argument, an integer. If a geneset contains more
     this number of genes, it will get filtered out and not included in the
@@ -429,32 +462,11 @@ def pickle_organism_public_genesets(organism, public_geneset_dest=None,
     called on this argument. However, if it can't be coerced, a ValueError is
     thrown.
 
-
     Returns:
     Nothing, it just writes the pickled genesets to the specified file.
 
     """
-
-    # Apparently, Tribe does not like requests for more than 1500 genesets
-    # at a time.
-    go_public_genes = retrieve_public_genesets(
-        {'show_tip': 'true', 'limit': '1500',
-         'organism__scientific_name': organism, 'title__startswith': 'GO'},
-        retrieve_all=True)
-
-    kegg_public_genes = retrieve_public_genesets(
-        {'show_tip': 'true', 'limit': '1500',
-         'organism__scientific_name': organism, 'title__startswith': 'KEGG'},
-        retrieve_all=True)
-
-    omim_public_genes = retrieve_public_genesets(
-        {'show_tip': 'true', 'limit': '1500',
-         'organism__scientific_name': organism, 'title__startswith': 'DO'},
-        retrieve_all=True)
-
-    all_public_genesets = {'Gene Ontology': go_public_genes,
-                           'KEGG': kegg_public_genes,
-                           'OMIM': omim_public_genes}
+    all_public_genesets = download_organism_public_genesets(organism)
 
     if not max_gene_num:
         max_gene_num = MAX_GENES_IN_PGENESETS

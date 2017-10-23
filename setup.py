@@ -11,7 +11,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='tribe-client',
-    version='1.1.9',
+    version='1.1.10',
     author='Greene Lab',
     author_email='team@greenelab.com',
     packages=find_packages(),
