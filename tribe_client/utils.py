@@ -395,7 +395,8 @@ def obtain_token_using_credentials(username, password, client_id,
     return tribe_response['access_token']
 
 
-def download_organism_public_genesets(organism, creator_username=None):
+def download_organism_public_genesets(organism, creator_username=None,
+                                      request_params={}):
     """
     Function to download all the public genesets available for a given
     organism, and optionally, for a given creator username.
@@ -407,17 +408,23 @@ def download_organism_public_genesets(organism, creator_username=None):
     downloaded from Tribe to get only the ones created by the user with
     this username.
 
+    request_params -- Optional argument, a dictionary of parameters to be
+    sent with the request to get gene sets from Tribe
+    (e.g. 'full_annotations').
+
     Returns:
     all_public_genesets -- A dictionary of GO, KEGG and DO terms available
     in Tribe for the specified organism (and optionally, creator_username).
     """
+    request_params['organism__scientific_name'] = organism
+
+    if 'show_tip' not in request_params or not request_params['show_tip']:
+        request_params['show_tip'] = 'true'
 
     # *Note: Tribe does not like requests for more than 1500
     # genesets at a time, so use this as the 'limit' parameter.
-    request_params = {
-        'show_tip': 'true', 'limit': '1500',
-        'organism__scientific_name': organism
-    }
+    if 'limit' not in request_params or not request_params['limit']:
+        request_params['limit'] = '1500'
 
     if creator_username:
         request_params['creator__username'] = creator_username
