@@ -423,7 +423,13 @@ def download_organism_public_genesets(organism, creator_username=None,
 
     # *Note: Tribe does not like requests for more than 1500
     # genesets at a time, so use this as the 'limit' parameter.
-    if 'limit' not in request_params or not request_params['limit']:
+    try:
+        req_limit = int(request_params['limit'])
+        if req_limit <= 0 or req_limit > 1500:
+            request_params['limit'] = '1500'
+    except:
+        # 'limit' key doesn't exist in request_params or
+        # request_params['limit'] can't be coerced to an integer
         request_params['limit'] = '1500'
 
     if creator_username:
