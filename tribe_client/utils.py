@@ -109,10 +109,16 @@ def retrieve_public_genesets(options={}, retrieve_all=False):
 
     genesets_url = TRIBE_URL + '/api/v1/geneset/'
 
-    try:
-        genesets = []
+    genesets = []
 
-        tribe_connection = requests.get(genesets_url, params=options)
+    tribe_connection = requests.get(genesets_url, params=options)
+
+    error_template_string = (
+        "Error when retrieving public genesets from tribe. "
+        "Got response from Tribe with status code '%s' and reason '%s'"
+    )
+
+    try:
         result = tribe_connection.json()
         genesets.extend(result['objects'])
 
@@ -121,14 +127,28 @@ def retrieve_public_genesets(options={}, retrieve_all=False):
 
             while meta['next'] is not None:
                 genesets_url = TRIBE_URL + meta['next']
+
+                # Note: Passing in 'options' as the 'params' keyword argument
+                # is no longer necessary since the meta['next'] url already
+                # contains these parameters encoded in the url.
                 tribe_connection = requests.get(genesets_url)
-                result = tribe_connection.json()
-                genesets.extend(result['objects'])
-                meta = result['meta']
+
+                try:
+                    result = tribe_connection.json()
+                    genesets.extend(result['objects'])
+                    meta = result['meta']
+
+                except:
+                    logger.error(error_template_string,
+                                 tribe_connection.status_code,
+                                 tribe_connection.reason)
+                    return []
 
         return genesets
 
     except:
+        logger.error(error_template_string, tribe_connection.status_code,
+                     tribe_connection.reason)
         return []
 
 
