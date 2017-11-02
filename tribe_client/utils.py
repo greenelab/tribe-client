@@ -115,7 +115,8 @@ def retrieve_public_genesets(options={}, retrieve_all=False):
 
     error_template_string = (
         "Error when retrieving public genesets from tribe. "
-        "Got response from Tribe with status code '%s' and reason '%s'"
+        "Got response from Tribe with status code '%s' and reason '%s'. "
+        "One thing you can try is a smaller 'limit' parameter."
     )
 
     try:
@@ -441,16 +442,23 @@ def download_organism_public_genesets(organism, creator_username=None,
     if 'show_tip' not in request_params or not request_params['show_tip']:
         request_params['show_tip'] = 'true'
 
-    # *Note: Tribe does not like requests for more than 1500
-    # genesets at a time, so use this as the 'limit' parameter.
+    # *Note: Tribe does not like requests for more than 1000 genesets
+    # at a time, so use this as the 'limit' parameter. This is not a hard
+    # limit, though - it varies based on the amount of data returned in
+    # the genesets.
     try:
         req_limit = int(request_params['limit'])
-        if req_limit <= 0 or req_limit > 1500:
-            request_params['limit'] = '1500'
+        if req_limit <= 0:
+            request_params['limit'] = '1000'
+        elif req_limit > 1000:
+            logger.warning("We recommend setting the 'limit' parameter in "
+                           "the 'request_params' dictionary to less than "
+                           "1000 to avoid requesting too much data at once "
+                           "from the Tribe API, which might lead to an error.")
     except:
         # 'limit' key doesn't exist in request_params or
         # request_params['limit'] can't be coerced to an integer
-        request_params['limit'] = '1500'
+        request_params['limit'] = '1000'
 
     if creator_username:
         request_params['creator__username'] = creator_username
