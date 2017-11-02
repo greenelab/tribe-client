@@ -134,16 +134,9 @@ def retrieve_public_genesets(options={}, retrieve_all=False):
                 # contains these parameters encoded in the url.
                 tribe_connection = requests.get(genesets_url)
 
-                try:
-                    result = tribe_connection.json()
-                    genesets.extend(result['objects'])
-                    meta = result['meta']
-
-                except:
-                    logger.error(error_template_string,
-                                 tribe_connection.status_code,
-                                 tribe_connection.reason)
-                    return []
+                result = tribe_connection.json()
+                genesets.extend(result['objects'])
+                meta = result['meta']
 
         return genesets
 
@@ -442,7 +435,7 @@ def download_organism_public_genesets(organism, creator_username=None,
     if 'show_tip' not in request_params or not request_params['show_tip']:
         request_params['show_tip'] = 'true'
 
-    # *Note: Tribe does not like requests for more than 1000 genesets
+    # *Note*: Tribe does not like requests for more than 1000 genesets
     # at a time, so use this as the 'limit' parameter. This is not a hard
     # limit, though - it varies based on the amount of data returned in
     # the genesets.
@@ -452,9 +445,9 @@ def download_organism_public_genesets(organism, creator_username=None,
             request_params['limit'] = '1000'
         elif req_limit > 1000:
             logger.warning("We recommend setting the 'limit' parameter in "
-                           "the 'request_params' dictionary to less than "
-                           "1000 to avoid requesting too much data at once "
-                           "from the Tribe API, which might lead to an error.")
+                           "the 'request_params' dictionary to at most 1000 "
+                           "to avoid requesting too much data at once from "
+                           "the Tribe API, which might lead to an error.")
     except:
         # 'limit' key doesn't exist in request_params or
         # request_params['limit'] can't be coerced to an integer
